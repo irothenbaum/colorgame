@@ -1,0 +1,41 @@
+$fontFamily: "Montserrat", sans-serif;
+
+@mixin footnote-text {
+  font-family: $fontFamily;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+}
+
+@mixin body-text {
+  font-family: $fontFamily;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: var(--font-size-md);
+  font-weight: 400;
+}
+
+@mixin title-text {
+  font-family: $fontFamily;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: var(--font-size-xxl);
+  font-weight: 900;
+}
+
+@mixin heading-text {
+  font-family: $fontFamily;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: var(--font-size-lg);
+  font-weight: 900;
+}
+
+@mixin subheading-text {
+  font-family: $fontFamily;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: var(--font-size-lg);
+  font-weight: 900;
+}

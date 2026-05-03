@@ -1,0 +1,13 @@
+@use './typography';
+@use "./mixins";
+@forward "./variables";
+@forward "./layout";
+@forward "./mixins";
+
+body, html {
+  @include typography.body-text();
+}
+
+* {
+  @include mixins.no-text-select();
+}

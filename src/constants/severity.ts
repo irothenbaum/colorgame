@@ -1,0 +1,6 @@
+export const SECONDARY: string = 'secondary'
+export const INFO: string = 'info'
+export const WARN: string = 'warn'
+export const SUCCESS: string = 'success'
+export const ERROR: string = 'error'
+// export const CONTRAST: string = 'contrast'

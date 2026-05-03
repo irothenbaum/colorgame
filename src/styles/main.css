@@ -1,0 +1,27 @@
+@import './reset.css';
+@import './variables.scss';
+@import 'primeicons/primeicons.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-size: var(--font-size-md);
+  line-height: 1.5em;
+  color: var(--color-text);
+  background-color: var(--color-page-bg);
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+
+  #app {
+    height: 100%;
+    width: 100%;
+  }
+}
