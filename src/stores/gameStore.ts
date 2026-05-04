@@ -15,8 +15,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
   const results = ref<GameState['results']>([])
   const currentLevel = ref<GameState['currentLevel']>(undefined)
   const worldState = ref<GameState['worldState']>(undefined)
-  const currentLevelId = ref<GameState['currentLevelId']>(undefined)
-  const completedLevels = computed<GameState['completedLevels']>(() => results.value.length)
+  const levelsCompleted = computed<GameState['levelsCompleted']>(() => results.value.length)
 
   const playerStore = usePlayerStore()
 
@@ -25,7 +24,6 @@ export const useGameStore = defineStore('game', (): GameStore => {
     // reset props
     scene.value = Scene.PLAY
     results.value = []
-    currentLevelId.value = undefined
     currentLevel.value = undefined
     worldState.value = undefined
 
@@ -33,20 +31,23 @@ export const useGameStore = defineStore('game', (): GameStore => {
 
   function instantiateLevel(levelId: string) {
     // Load level from levels file, set currentLevel and worldState
-    currentLevelId.value = levelId
     currentLevel.value = {
       id: levelId,
+      name: "",
+      description: "",
       enemies: [], // TODO: load actual enemies from level data
-      trackCount: 1 // TODO: load from level data
+      tracks: 1 // TODO: load from level data
     }
 
     playerStore.prepareNewLevel() // reset player reloads at the start of each level
 
     worldState.value = {
-      level: currentLevel.value,
       levelId,
       score: 0,
       maxCombo: 0,
+      enemiesKilled: [],
+      enemiesLookup: {}, // TODO: populate with initial enemies based on level data
+      leadEnemies: [], // TODO: populate based on initial enemy positions
       spawnStep: 0
     }
   }
@@ -54,9 +55,8 @@ export const useGameStore = defineStore('game', (): GameStore => {
   return {
     scene,
     results,
-    completedLevels,
+    levelsCompleted,
     currentLevel,
-    currentLevelId,
     worldState,
 
     // actions

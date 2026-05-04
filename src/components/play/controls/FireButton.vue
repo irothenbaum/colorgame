@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed} from 'vue'
 import {usePlayerStore} from '@/stores/playerStore'
-import {colorHealthToColor} from '@/helpers/colorUtils'
+import {colorHealthToColor, getContrastColor} from '@/helpers/colorUtils'
 import {useLongPress} from '@/composables/useLongPress'
 import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
 
@@ -20,14 +20,7 @@ const {pressing, events} = useLongPress(
 )
 
 const textColor = computed(() => {
-  const hex = backgroundColor.value
-  if (hex === 'black') return '#ffffff'
-  const r = parseInt(hex.slice(1, 3), 16) / 255
-  const g = parseInt(hex.slice(3, 5), 16) / 255
-  const b = parseInt(hex.slice(5, 7), 16) / 255
-  // relative luminance (WCAG)
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
-  return luminance > 0.35 ? '#000000' : '#ffffff'
+  return getContrastColor(backgroundColor.value)
 })
 </script>
 
@@ -59,6 +52,7 @@ const textColor = computed(() => {
   align-items: center;
   justify-content: center;
   @include styles.block-text;
+  @include styles.text-shadow();
   padding-bottom: 0;
   font-size: min(50cqw, 60cqh);
   line-height: 1;

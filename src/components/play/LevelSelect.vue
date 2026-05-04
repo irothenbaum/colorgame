@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import {useGameStore} from '@/stores/gameStore.ts'
-import {storeToRefs} from 'pinia'
-import type {LevelState} from '@/types/gameTypes.ts'
+import type {LevelDefinition} from '@/types/gameTypes.ts'
 import {loadAllLevels} from '@/helpers/levelUtils.ts'
+import LevelCard from './LevelCard.vue'
 
-const gameStore = useGameStore()
-const {currentLevel} = storeToRefs(gameStore)
+const emit = defineEmits<{
+  play: [levelId: string]
+}>()
 
-const levels: LevelState[] = loadAllLevels()
+const levels: LevelDefinition[] = loadAllLevels()
 </script>
 
 <template>
   <div class="select-level">
     <ul class="levels-container">
       <li v-for="l in levels" v-bind:key="l.id">
-        <p>{{l.id}}</p>
+        <LevelCard :level="l" @play="emit('play', $event)" />
       </li>
     </ul>
   </div>
@@ -29,15 +29,19 @@ const levels: LevelState[] = loadAllLevels()
   background: white;
 
   .levels-container {
+    padding: 10vh 0;
     height: 100%;
     overflow-y: scroll;
-    min-height: 100%;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     li {
-      height: 100%;
-      @include styles.flex-column();
-      justify-content: center;
-      background-color: green;
+      height: 80vh;
+      scroll-snap-align: center;
     }
   }
 }

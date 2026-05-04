@@ -22,7 +22,8 @@ time, mark, audio, video, select, input {
     padding: 0;
     border: 0;
     font-size: 100%;
-    font: inherit;
+    font-size: inherit;
+    font-family: inherit;
     vertical-align: baseline;
     outline: none;
     appearance: none;

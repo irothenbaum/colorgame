@@ -21,8 +21,11 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
     startTimer()
   }
 
+  const onContextmenu = (e: Event) => {
+    e.preventDefault()
+  }
+
   const onTouchend = () => {
-    touchActive.value = false
     pressing.value = false
     if (timer.value) {
       clearTimeout(timer.value)
@@ -30,11 +33,13 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
     }
     if (!fired.value) onTap()
     fired.value = false
+    // keep touchActive true long enough to swallow the synthetic mouse events browsers fire after touch
+    setTimeout(() => { touchActive.value = false }, 300)
   }
 
   const onTouchcancel = () => {
-    touchActive.value = false
     abort()
+    setTimeout(() => { touchActive.value = false }, 300)
   }
 
   const onMousedown = () => {
@@ -78,6 +83,7 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
       mousedown: onMousedown,
       mouseup: onMouseup,
       mouseleave: onMouseleave,
+      contextmenu: onContextmenu,
     }
   }
 }

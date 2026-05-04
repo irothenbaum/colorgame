@@ -1,8 +1,12 @@
 @use "layout";
 @use "variables";
 
-@mixin drop-shadow($amount: 4px, $opacity: 0.1) {
+@mixin drop-shadow($amount: 4px, $opacity: 0.2) {
   box-shadow: 0 calc($amount/3) $amount rgba(0, 0, 0, $opacity);
+}
+
+@mixin text-shadow($blur: 2px, $opacity: 0.3) {
+  text-shadow: 0 0 $blur rgba(0, 0, 0, $opacity), 0 0 $blur * 2 rgba(0, 0, 0, $opacity / 2)
 }
 
 @mixin hero-center {
@@ -50,6 +54,7 @@
 @mixin long-press-progress($direction: bottom, $duration: 500ms) {
   position: relative;
   overflow: hidden;
+  touch-action: none;
 
   &::before {
     content: '';

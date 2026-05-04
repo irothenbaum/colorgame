@@ -42,5 +42,6 @@ const emit = defineEmits<{
 
 button {
   @include styles.drop-shadow();
+  @include styles.text-shadow();
 }
 </style>

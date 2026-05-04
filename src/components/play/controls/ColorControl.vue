@@ -74,14 +74,15 @@ const {pressing, events} = useLongPress(
     align-items: center;
     justify-content: center;
     @include styles.block-text;
-    font-size: min(100cqw, 100cqh);
+    font-size: min(100cqw, 90cqh);
     line-height: 1;
     color: rgba(255, 255, 255, 0.9);
     pointer-events: none;
     overflow: hidden;
+
+    @include styles.text-shadow();
   }
 
-  border: 0.5em solid var(--color);
   background: var(--inactive);
 
   &.active {

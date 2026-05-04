@@ -12,11 +12,16 @@ const STEP_LEVEL_RESULTS = 2
 
 const step = ref<number>(STEP_LEVEL_SELECT)
 const gameStore = useGameStore()
+
+function handlePlay(levelId: string) {
+  gameStore.instantiateLevel(levelId)
+  step.value = STEP_PLAY_LEVEL
+}
 </script>
 
 <template>
   <div class="play">
-    <LevelSelect v-if="step === STEP_LEVEL_SELECT" />
+    <LevelSelect v-if="step === STEP_LEVEL_SELECT" @play="handlePlay" />
     <PlayLevel v-else-if="step === STEP_PLAY_LEVEL" />
   </div>
 </template>

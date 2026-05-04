@@ -6,7 +6,7 @@
 @forward "./typography";
 
 body, html {
-  @include typography.body-text();
+  @include typography.block-text();
 }
 
 * {
