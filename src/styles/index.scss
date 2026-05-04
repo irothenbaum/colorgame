@@ -3,6 +3,7 @@
 @forward "./variables";
 @forward "./layout";
 @forward "./mixins";
+@forward "./typography";
 
 body, html {
   @include typography.body-text();

@@ -1,6 +1,7 @@
 @use './layout';
 
 // these should match constants/environment.ts
+$colorResetDelay: 500ms;
 $transitionStepSpeed: 0.5s;
 $transitionPauseSpeed: 1s;
 $transitionTotalSpeed: $transitionStepSpeed * 2 + $transitionPauseSpeed;
@@ -73,15 +74,20 @@ $transitionPause: $transitionPauseSpeed $transitionStepEase;
 
 
   --color-red: #ff4d4d;
+  --color-red-inactive: #bc6969;
   --color-red-disabled: #ae9595;
   --color-green: #4CAF50;
+  --color-green-inactive: #7db07d;
   --color-green-disabled: #8ea58e;
   --color-blue: #2196F3;
+  --color-blue-inactive: #6ca0d8;
   --color-blue-disabled: #94a2a8;
 
   --color-track-bg: var(--color-white);
   --color-controls-bg: var(--color-light-grey);
 
+
+  --controls-gutter-size: var(--space-sm);
 }
 
 @include layout.small-and-below {

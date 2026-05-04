@@ -44,6 +44,47 @@
   max-width: 80vw;
 }
 
+// Renders a ::before overlay that grows and fades in during a long press.
+// $direction: the edge it grows from — 'bottom' (grows upward) or 'left' (grows rightward)
+// $duration: must match the useLongPress duration passed in the component
+@mixin long-press-progress($direction: bottom, $duration: 500ms) {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    background: var(--color-shadow-light);
+    opacity: 0;
+    transition: none;
+
+    @if $direction == bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 0%;
+    } @else if $direction == left {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+    }
+  }
+
+  &.pressing::before {
+    opacity: 1;
+    transition: opacity 300ms linear 100ms;
+
+    @if $direction == bottom {
+      height: 100%;
+      transition: height $duration ease-in, opacity 300ms linear 100ms;
+    } @else if $direction == left {
+      width: 100%;
+      transition: width $duration ease-in, opacity 300ms linear 100ms;
+    }
+  }
+}
+
 @mixin no-text-select() {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none; /* iOS Safari */
