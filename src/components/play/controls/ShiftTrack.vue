@@ -11,7 +11,7 @@ defineProps<{
 </template>
 
 <style scoped lang="scss">
-@use '../../styles';
+@use '../../../styles';
 
 .shift-track {
   height: 100%;

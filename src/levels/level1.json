@@ -1,0 +1,14 @@
+{
+  "id": "level-1",
+  "enemies": [
+    {
+      "health": {
+        "red": 1,
+        "blue": 0,
+        "green": 0
+      },
+      "type": "pixel"
+    }
+  ],
+  "trackCount": 0
+}

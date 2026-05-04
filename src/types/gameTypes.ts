@@ -1,7 +1,13 @@
 import type { ColorValue } from './colorTypes'
 
+export enum Scene {
+  MENU = 'menu',
+  PLAY = 'play',
+  RESULTS = 'results',
+}
+
 export enum EnemyType {
-  Pixel = 'Pixel',
+  Pixel = 'pixel',
   // TODO: more types
 }
 
@@ -11,12 +17,13 @@ export interface EnemyInformation {
 }
 
 export interface Position {
-  x: number
-  y: number
+  x: number // the track number indexed at 0
+  y: number // the vertical unit position (0 -> VERTICAL_UNITS)
 }
 
 export interface EnemyState extends EnemyInformation {
   position: Position
+  healthRemaining: ColorValue
 }
 
 export interface LevelResult {
@@ -28,6 +35,7 @@ export interface LevelResult {
 export interface LevelState {
   id: string
   enemies: Array<EnemyInformation>
+  trackCount: number
 }
 
 export interface WorldState extends LevelResult {
@@ -37,6 +45,7 @@ export interface WorldState extends LevelResult {
 
 export interface GameState {
   results: Array<LevelResult>
+  scene: Scene
   completedLevels: number // the count of results
 
   // these are all undefined if we're not in a level

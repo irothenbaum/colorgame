@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ColorControl from '@/components/controls/ColorControl.vue'
+import ColorControl from './ColorControl.vue'
 import {usePlayerStore} from '@/stores/playerStore'
 import {ColorType} from '@/types/colorTypes.ts'
-import FireButton from '@/components/controls/FireButton.vue'
-import ShiftTrack from '@/components/controls/ShiftTrack.vue'
+import FireButton from './FireButton.vue'
+import ShiftTrack from './ShiftTrack.vue'
 
 const playerStore = usePlayerStore()
 </script>
@@ -24,7 +24,7 @@ const playerStore = usePlayerStore()
 </template>
 
 <style scoped lang="scss">
-@use '../styles';
+@use '../../../styles';
 
 .controls {
   background: var(--color-controls-bg);

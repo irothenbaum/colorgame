@@ -39,7 +39,7 @@ const {pressing, events} = useLongPress(
 </template>
 
 <style scoped lang="scss">
-@use '../../styles';
+@use '../../../styles';
 
 .color-control {
   &.red {

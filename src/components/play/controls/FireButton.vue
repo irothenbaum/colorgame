@@ -40,7 +40,7 @@ const textColor = computed(() => {
 </template>
 
 <style scoped lang="scss">
-@use '../../styles';
+@use '../../../styles';
 
 .fire-button {
   height: 100%;

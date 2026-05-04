@@ -1,34 +1,26 @@
 <script setup lang="ts">
-import Controls from '@/components/Controls.vue';
-import World from '@/components/World.vue';
+import Menu from './scenes/Menu.vue';
+import Play from './scenes/Play.vue';
+import {useGameStore} from '@/stores/gameStore'
+import {storeToRefs} from 'pinia'
+import {Scene} from '@/types/gameTypes'
+
+const gameStore = useGameStore()
+const {scene} = storeToRefs(gameStore)
 </script>
 
 <template>
-    <div class="game">
-      <World />
-      <Controls />
-    </div>
+  <div class="game">
+    <Menu v-if="scene === Scene.MENU" />
+    <Play v-if="scene === Scene.PLAY" />
+  </div>
 </template>
 
 <style scoped lang="scss">
 @use '../styles';
 
 .game {
-  @include styles.flex-column(0);
   height: 100%;
   width: 100%;
-  container-type: inline-size;
-  background: black;
-
-  .world {
-    width: 100%;
-    height: 100%;
-    flex: 1;
-  }
-
-  .controls {
-    width: 100%;
-    height: calc((100cqw - 4 * var(--controls-gutter-size)) * 2 / 3 + 3 * var(--controls-gutter-size));
-  }
 }
 </style>
