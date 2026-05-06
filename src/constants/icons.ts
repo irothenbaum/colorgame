@@ -17,3 +17,4 @@ export const HIDE_ANSWER: string = PrimeIcons.EYE_SLASH
 export const STAR: string = PrimeIcons.STAR_FILL
 export const CHALLENGE: string = PrimeIcons.USERS
 export const REFRESH: string = PrimeIcons.REFRESH
+export const LOCK: string = PrimeIcons.LOCK

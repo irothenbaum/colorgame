@@ -5,6 +5,7 @@ import {ColorType} from '@/types/colorTypes'
 import {usePlayerStore} from '@/stores/playerStore'
 import {useLongPress} from '@/composables/useLongPress'
 import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
+import {LOCK} from '@/constants/icons'
 
 const props = defineProps<{
   color: ColorType
@@ -35,7 +36,9 @@ const {pressing, events} = useLongPress(
     :class="{[color]: true, reloading: isReloading, pressing: pressing && colorLoaded > 0, active: colorLoaded > 0}"
     :style="`--label: '${colorLoaded}'`"
     v-on="events"
-  ></div>
+  >
+    <i v-if="isReloading" :class="LOCK" class="lock-icon" />
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -90,6 +93,18 @@ const {pressing, events} = useLongPress(
   }
   &.reloading {
     background: var(--disabled);
+  }
+
+  .lock-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: min(60cqw, 55cqh);
+    color: rgba(255, 255, 255, 0.7);
+    pointer-events: none;
+    @include styles.text-shadow();
   }
 }
 </style>

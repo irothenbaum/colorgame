@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import type {FireResult} from '@/types/gameTypes.ts'
 import type {Reactive} from '@/types/utilityTypes.ts'
 import type {PlayerState} from '@/types/playerTypes.ts'
 import type {ColorValue} from '@/types/colorTypes.ts'
@@ -7,6 +8,7 @@ import type {ColorValue} from '@/types/colorTypes.ts'
 export interface PlayerStore extends Reactive<PlayerState> {
   prepareNewLevel: () => void
   getLoadedColorValue: () => ColorValue
+  handleFireResult: (result: FireResult) => void
 }
 
 export const usePlayerStore = defineStore('player', (): PlayerStore => {
@@ -16,6 +18,7 @@ export const usePlayerStore = defineStore('player', (): PlayerStore => {
   const redReload = ref(0)
   const greenReload = ref(0)
   const blueReload = ref(0)
+  const activeTrack = ref(0)
 
   function prepareNewLevel() {
     redLoaded.value = 0
@@ -44,6 +47,25 @@ export const usePlayerStore = defineStore('player', (): PlayerStore => {
       && (redLoaded.value + greenLoaded.value + blueLoaded.value > 0) // at least 1 loaded
   })
 
+  function handleFireResult(result: FireResult) {
+    if (!result.success) {
+      // if the shot missed, all loaded colors go into reload
+      redReload.value += redLoaded.value
+      greenReload.value += greenLoaded.value
+      blueReload.value += blueLoaded.value
+    } else if (result.shrapnel) {
+      // if the shot hit but has shrapnel, any color left over counts towards reload
+      redReload.value += result.shrapnel.red
+      greenReload.value += result.shrapnel.green
+      blueReload.value += result.shrapnel.blue
+    }
+    // no matter what we reset the color load
+    redLoaded.value = 0
+    greenLoaded.value = 0
+    blueLoaded.value = 0
+  }
+
+
   return {
     redLoaded,
     greenLoaded,
@@ -52,9 +74,11 @@ export const usePlayerStore = defineStore('player', (): PlayerStore => {
     greenReload,
     blueReload,
     canFire,
+    activeTrack,
 
     // actions
     prepareNewLevel,
-    getLoadedColorValue
+    getLoadedColorValue,
+    handleFireResult
   }
 })

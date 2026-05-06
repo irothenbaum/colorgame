@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import {useGameStore} from '@/stores/gameStore.ts'
-import {storeToRefs} from 'pinia'
+import type {LevelDefinition} from '@/types/gameTypes.ts'
 
 import LevelSelect from '@/components/play/LevelSelect.vue'
 import PlayLevel from '@/components/play/PlayLevel.vue'
@@ -13,8 +13,8 @@ const STEP_LEVEL_RESULTS = 2
 const step = ref<number>(STEP_LEVEL_SELECT)
 const gameStore = useGameStore()
 
-function handlePlay(levelId: string) {
-  gameStore.instantiateLevel(levelId)
+function handlePlay(level: LevelDefinition) {
+  gameStore.instantiateLevel(level)
   step.value = STEP_PLAY_LEVEL
 }
 </script>

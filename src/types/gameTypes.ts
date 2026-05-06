@@ -17,14 +17,9 @@ export interface EnemyDefinition {
   track?: number
 }
 
-export interface Position {
-  x: number // the track number indexed at 0
-  y: number // the vertical unit position (0 -> VERTICAL_UNITS)
-}
-
 export interface EnemyState extends EnemyDefinition {
   id: string
-  position: Position
+  track: number // 0 = track 1, 1 = track 2, etc. (assigned when spawned)
   healthRemaining: ColorValue
 }
 
@@ -32,8 +27,15 @@ export interface LevelResult {
   levelId: string
   score: number
   maxCombo: number
-  enemiesKilled: string[] // string of enemy ids that have been killed already
+  killedEnemyIds: string[] // string of enemy ids that have been killed already
 }
+
+export type FireResult = {
+  success: boolean
+  debris?: ColorValue // what's left of the enemy after being hit by the shot
+  shrapnel?: ColorValue // what's left of the shot after hitting the enemy
+}
+
 
 export interface LevelDefinition {
   id: string
@@ -46,7 +48,6 @@ export interface LevelDefinition {
 
 export interface WorldState extends LevelResult {
   enemiesLookup: Record<string, EnemyState> // enemies currently visible on the screen
-  leadEnemies: string[] // indexed by track number, the id of the current targetable enemy on each track (enemy with highest Y position)
   spawnStep: number // the index of level.enemies we're on
 }
 
@@ -59,5 +60,3 @@ export interface GameState {
   currentLevel: LevelDefinition | undefined
   worldState: WorldState | undefined
 }
-
-

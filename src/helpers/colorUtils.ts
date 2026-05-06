@@ -62,3 +62,11 @@ export function getHexFromColors(r: number, g: number, b: number): string {
   b = Math.round(Math.min(255, Math.max(0, b)))
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
+
+export function collideColors(targetColor: ColorValue, projectileColor: ColorValue): ColorValue {
+  return {
+    red: Math.max(0, targetColor.red - projectileColor.red),
+    green: Math.max(0, targetColor.green - projectileColor.green),
+    blue: Math.max(0, targetColor.blue - projectileColor.blue)
+  }
+}

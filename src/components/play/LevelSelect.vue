@@ -4,7 +4,7 @@ import {loadAllLevels} from '@/helpers/levelUtils.ts'
 import LevelCard from './LevelCard.vue'
 
 const emit = defineEmits<{
-  play: [levelId: string]
+  play: [level: LevelDefinition]
 }>()
 
 const levels: LevelDefinition[] = loadAllLevels()
@@ -14,7 +14,7 @@ const levels: LevelDefinition[] = loadAllLevels()
   <div class="select-level">
     <ul class="levels-container">
       <li v-for="l in levels" v-bind:key="l.id">
-        <LevelCard :level="l" @play="emit('play', $event)" />
+        <LevelCard :level="l" @play="emit('play', l)" />
       </li>
     </ul>
   </div>

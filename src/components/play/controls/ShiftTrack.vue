@@ -1,11 +1,28 @@
 <script setup lang="ts">
-defineProps<{
+import {storeToRefs} from 'pinia'
+import {useGameStore} from '@/stores/gameStore.ts'
+import {usePlayerStore} from '@/stores/playerStore.ts'
+
+const props = defineProps<{
   value: 1 | -1
 }>()
+
+const gameStore = useGameStore()
+const playerStore = usePlayerStore()
+
+const {currentLevel} = storeToRefs(gameStore)
+const {activeTrack} = storeToRefs(playerStore)
+
+function handleShift() {
+  if (!currentLevel.value) {
+    return
+  }
+  activeTrack.value = (activeTrack.value + props.value) % currentLevel.value!.tracks
+}
 </script>
 
 <template>
-  <div class="shift-track">
+  <div class="shift-track" @click="handleShift">
     <span class="sign">{{ value === 1 ? '>' : '<' }}</span>
   </div>
 </template>
