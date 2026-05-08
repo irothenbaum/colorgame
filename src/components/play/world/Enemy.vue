@@ -1,18 +1,27 @@
 <script setup lang="ts">
 import {computed} from 'vue'
 import type {EnemyState} from '@/types/gameTypes.ts'
-import {colorHealthToColor} from '@/helpers/colorUtils.ts'
-import {getValueFromHealth} from '@/helpers/gameUtils.ts'
+import {colorHealthToColor, getValueFromColor} from '@/helpers/colorUtils.ts'
 import {VERTICAL_UNITS} from '@/constants/environment.ts'
+import {type EventPayload, EventType, useEvents} from '@/composables/useEvents.ts'
 
 const props = defineProps<{
   enemy: EnemyState
 }>()
 
 const enemyColor = computed(() => colorHealthToColor(props.enemy.healthRemaining))
-const healthValue = computed(() => getValueFromHealth(props.enemy.healthRemaining))
+const healthValue = computed(() => getValueFromColor(props.enemy.healthRemaining))
 const renderHeightCQH = computed(() => healthValue.value * 100 / VERTICAL_UNITS) // each health point is worth 0.5cqh in height
 
+const {on} = useEvents()
+
+on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
+  if (payload.struckEnemyId !== props.enemy.id) {
+    return
+  }
+
+  // it hit us! start flashing
+})
 </script>
 
 <template>

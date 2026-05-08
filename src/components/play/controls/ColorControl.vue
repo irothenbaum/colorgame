@@ -65,14 +65,8 @@ const {pressing, events} = useLongPress(
 }
 
 @keyframes pulse-expand {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1.15);
-    opacity: 0;
-  }
+  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.7; }
+  100% { box-shadow: 0 0 0 var(--space-md) currentColor; opacity: 0; }
 }
 
 .color-control-wrapper {
@@ -88,7 +82,7 @@ const {pressing, events} = useLongPress(
     position: absolute;
     inset: 0;
     border-radius: var(--space-md);
-    background: var(--color);
+    color: var(--color);
     pointer-events: none;
     animation: pulse-expand 0.5s ease-out forwards;
   }

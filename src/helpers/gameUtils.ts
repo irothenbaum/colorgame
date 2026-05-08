@@ -20,7 +20,3 @@ export function instantiateEnemies(level: LevelDefinition): Record<string, Enemy
   })
   return enemies
 }
-
-export function getValueFromHealth(health: ColorValue): number {
-  return health.red + health.green + health.blue
-}

@@ -6,7 +6,7 @@ import {colorHealthToColor, getContrastColor} from '@/helpers/colorUtils'
 import {useLongPress} from '@/composables/useLongPress'
 import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
 import {storeToRefs} from 'pinia'
-import {getValueFromHealth} from '@/helpers/gameUtils.ts'
+import {getValueFromColor} from '@/helpers/colorUtils.ts'
 
 const gameStore = useGameStore()
 const playerStore = usePlayerStore()
@@ -16,20 +16,21 @@ const {activeTrack} = storeToRefs(playerStore)
 const loadedColor = computed(() => playerStore.getLoadedColorValue())
 const backgroundColor = computed(() => colorHealthToColor(loadedColor.value))
 
-const pulses = ref<number[]>([])
+const pulses = ref<{id: number, color: string}[]>([])
 let nextPulseId = 0
 
-const loadedColorValue = computed(() => getValueFromHealth(loadedColor.value))
+const loadedColorValue = computed(() => getValueFromColor(loadedColor.value))
 
 const {pressing, events} = useLongPress(
   () => {
     if (loadedColorValue.value === 0) {
       return
     }
+    const color = backgroundColor.value
     playerStore.handleFireResult(gameStore.fireShot(activeTrack.value, loadedColor.value))
     const id = nextPulseId++
-    pulses.value.push(id)
-    setTimeout(() => { pulses.value = pulses.value.filter(p => p !== id) }, 500)
+    pulses.value.push({id, color})
+    setTimeout(() => { pulses.value = pulses.value.filter(p => p.id !== id) }, 500)
   },
   () => {
     playerStore.redLoaded = 0
@@ -54,7 +55,7 @@ const label = "PRINT"
       </span>
       <span>{{ loadedColorValue }}</span>
     </button>
-    <span v-for="id in pulses" :key="id" class="pulse-ring" :style="{background: backgroundColor}" />
+    <span v-for="p in pulses" :key="p.id" class="pulse-ring" :style="{color: p.color}" />
   </div>
 </template>
 
@@ -62,14 +63,8 @@ const label = "PRINT"
 @use '../../../styles';
 
 @keyframes pulse-expand {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1.15);
-    opacity: 0;
-  }
+  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.7; }
+  100% { box-shadow: 0 0 0 var(--space-lg) currentColor; opacity: 0; }
 }
 
 .fire-button {

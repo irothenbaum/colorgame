@@ -70,3 +70,7 @@ export function collideColors(targetColor: ColorValue, projectileColor: ColorVal
     blue: Math.max(0, targetColor.blue - projectileColor.blue)
   }
 }
+
+export function getValueFromColor(health: ColorValue): number {
+  return health.red + health.green + health.blue
+}

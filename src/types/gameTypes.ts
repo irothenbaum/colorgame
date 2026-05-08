@@ -31,7 +31,11 @@ export interface LevelResult {
 }
 
 export type FireResult = {
-  success: boolean
+  struckEnemy: boolean
+  struckEnemyId?: string
+  track: number
+  projectile: ColorValue
+  damageDone?: ColorValue // how much health was taken off the enemy by the shot (basically the difference between projectile and shrapnel)
   debris?: ColorValue // what's left of the enemy after being hit by the shot
   shrapnel?: ColorValue // what's left of the shot after hitting the enemy
 }
@@ -48,7 +52,6 @@ export interface LevelDefinition {
 
 export interface WorldState extends LevelResult {
   enemiesLookup: Record<string, EnemyState> // enemies currently visible on the screen
-  spawnStep: number // the index of level.enemies we're on
 }
 
 export interface GameState {

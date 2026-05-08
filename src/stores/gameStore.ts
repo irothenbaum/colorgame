@@ -6,7 +6,8 @@ import type { Reactive, } from '@/types/utilityTypes.ts'
 import { usePlayerStore } from '@/stores/playerStore.ts'
 import {instantiateEnemies} from '@/helpers/gameUtils.ts'
 import type {ColorValue} from '@/types/colorTypes.ts'
-import {collideColors} from '@/helpers/colorUtils.ts'
+import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
+import {EventType, useEvents} from '@/composables/useEvents.ts'
 
 
 export interface GameStore extends Reactive<GameState> {
@@ -22,6 +23,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
   const currentLevel = ref<GameState['currentLevel']>(undefined)
   const worldState = ref<GameState['worldState']>(undefined)
   const levelsCompleted = computed<GameState['levelsCompleted']>(() => results.value.length)
+  const {broadcast} = useEvents() // to trigger reactivity in tests when we call fireShot and update worldState.enemiesLookup
 
   const playerStore = usePlayerStore()
 
@@ -67,32 +69,57 @@ export const useGameStore = defineStore('game', (): GameStore => {
       maxCombo: 0,
       killedEnemyIds: [],
       enemiesLookup: instantiateEnemies(level),
-      spawnStep: 0
     }
   }
 
   function fireShot(track: number, color: ColorValue): FireResult {
+    const retVal: FireResult = {
+      struckEnemy: true,
+      projectile: color,
+      track: track,
+    }
+
     const firstEnemy = Object.values(worldState.value!.enemiesLookup).filter(
       e => e.track === track && !worldState.value!.killedEnemyIds.includes(e.id)
     )[0]
 
-    if (!firstEnemy) {
-      return {
-        success: false,
+    if (firstEnemy) {
+      retVal.struckEnemyId = firstEnemy.id
+
+      // what's left of the enemy after being hit by the shot
+      retVal.debris = collideColors(firstEnemy.healthRemaining, color)
+
+      if (getValueFromColor(retVal.debris) === 0) {
+        delete retVal.debris // no debris if the enemy is destroyed
       }
+
+      // what's left of the shot after hitting the enemy
+      retVal.shrapnel = collideColors(color, firstEnemy.healthRemaining)
+
+      if (getValueFromColor(retVal.shrapnel) === 0) {
+        // shot is fully absorbed, no shrapnel
+        retVal.damageDone = color
+        delete retVal.shrapnel
+      } else {
+        // shot is partially absorbed, shrapnel is what's left of the shot, and damage done is the difference between the original shot and the shrapnel
+        retVal.damageDone = collideColors(color, retVal.shrapnel)
+      }
+
+      if (retVal.debris) {
+        // if the enemy is damaged but not destroyed, update its health in the world state
+        worldState.value!.enemiesLookup[firstEnemy.id].healthRemaining = retVal.debris
+      } else {
+        // enemy is destroyed
+        worldState.value!.killedEnemyIds.push(firstEnemy.id)
+      }
+    } else {
+      retVal.struckEnemy = false
+      retVal.shrapnel = color // 100% shrapnel if it misses entirely
     }
 
-    // what's left of the enemy after being hit by the shot
-    const debris = collideColors(firstEnemy.healthRemaining, color)
+    broadcast(EventType.ShotFired, retVal)
 
-    // what's left of the shot after hitting the enemy
-    const shrapnel = collideColors(color, firstEnemy.healthRemaining)
-
-    return {
-      success: true,
-      debris: debris,
-      shrapnel: shrapnel,
-    }
+    return retVal
   }
 
   return {
