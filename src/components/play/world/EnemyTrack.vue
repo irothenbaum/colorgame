@@ -3,6 +3,7 @@ import {watch, onMounted, onUnmounted, ref, computed} from 'vue'
 import {useGameStore} from '@/stores/gameStore.ts'
 import type {EnemyState} from '@/types/gameTypes.ts'
 import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment.ts'
+import {useTimeout, type TimerHandle} from '@/composables/useInterval.ts'
 import type {CSSProperties} from 'vue'
 import {storeToRefs} from 'pinia'
 import Enemy from './Enemy.vue'
@@ -24,8 +25,9 @@ const gameStore = useGameStore()
 const {worldState} = storeToRefs(gameStore)
 const isMoving = ref<boolean>(false)
 const enemyTipPosition = ref<number>(0) // the distance of the furthest advanced enemy on the track.
-const stepInterval = ref<number>(0)
+const endGameTimer = ref<TimerHandle | null>(null)
 const transitionDurationMS = ref<number>(0)
+const maxTimeToReachBottom = computed<number>(() => DEFAULT_TIME_TO_REACH_BOTTOM_MS / props.speedMultiplier)
 
 const enemiesOnTrack = computed<EnemyState[]>(() => {
   return Object.values(worldState.value!.enemiesLookup).filter(e => e.track === props.trackIndex)
@@ -49,11 +51,14 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   // we know damageDone is defined because the enemy was struck, but typescript doesn't
   const amountStruck = getValueFromColor(payload.damageDone!)
 
-  enemyTipPosition.value = enemyTipPosition.value - amountStruck
+  const msPerUnit = maxTimeToReachBottom.value / VERTICAL_UNITS
+  const unitsElapsed = (endGameTimer.value!.msElapsed() || 0) / msPerUnit
+
+  console.log({timeElapsed: endGameTimer.value!.msElapsed(),unitsElapsed, amountStruck, enemyTipPosition: enemyTipPosition.value})
+
+  enemyTipPosition.value = enemyTipPosition.value - amountStruck + unitsElapsed
   isMoving.value = false
-  setTimeout(() => {
-    isMoving.value = true
-  }, DAMAGE_FLASH_DURATION_MS)
+  useTimeout(() => { isMoving.value = true }, DAMAGE_FLASH_DURATION_MS)
 })
 
 watch(
@@ -61,15 +66,15 @@ watch(
   () => {
     // if we're not moving, we pause
     if (!isMoving.value) {
-      clearInterval(stepInterval.value)
+      endGameTimer.value?.cancel()
+      endGameTimer.value = null
       return
     }
 
     // showing my work here but basically juts calculating when the tip would hit the bottom
     const tipPositionRatio = (VERTICAL_UNITS - enemyTipPosition.value) / VERTICAL_UNITS
-    const maxTimeToReachBottom = DEFAULT_TIME_TO_REACH_BOTTOM_MS / props.speedMultiplier
-    const delay = tipPositionRatio * maxTimeToReachBottom
-    stepInterval.value = setInterval(() => {
+    const delay = tipPositionRatio * maxTimeToReachBottom.value
+    endGameTimer.value = useTimeout(() => {
       console.log('GAME OVER: ENEMY HIT THE BOTTOM')
       // gameStore.endLevel()
     }, delay)
@@ -81,14 +86,14 @@ watch(
 )
 
 onMounted(() => {
-  setTimeout(() => {
+  useTimeout(() => {
     // this ensures our inline styles can be applied
     isMoving.value = true
   }, 1000)
 })
 
 onUnmounted(() => {
-  clearInterval(stepInterval.value)
+  endGameTimer.value?.cancel()
 })
 
 const styles = computed<CSSProperties>(() => {
@@ -101,7 +106,7 @@ const styles = computed<CSSProperties>(() => {
   } else {
     return {
       transform: `translateY(${enemyTipPosition.value}cqh)`,
-      transitionDuration: 0,
+      transitionDuration: `0s`,
     }
   }
 })

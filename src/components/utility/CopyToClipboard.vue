@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {ref} from 'vue'
+import {useTimeout} from '@/composables/useInterval.ts'
 import TextInput from '@/components/utility/TextInput.vue'
 import {COPY, CHECK} from '@/constants/icons.ts'
 
@@ -18,9 +19,7 @@ function handleCopy() {
   navigator.clipboard.writeText(props.text)
   emit('copy')
   copied.value = true
-  setTimeout(() => {
-    copied.value = false
-  }, 2000)
+  useTimeout(() => { copied.value = false }, 2000)
 }
 </script>
 

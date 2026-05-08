@@ -6,43 +6,50 @@
     {
       "health": {
         "red": 1,
-        "blue": 0,
-        "green": 0
-      }
-    },
-    {
-      "health": {
-        "red": 0,
-        "blue": 1,
-        "green": 0
-      }
-    },
-    {
-      "health": {
-        "red": 0,
-        "blue": 0,
-        "green": 1
+        "green": 2,
+        "blue": 3
       }
     },
     {
       "health": {
         "red": 1,
-        "blue": 1,
-        "green": 0
+        "green": 0,
+        "blue": 0
       }
     },
     {
       "health": {
         "red": 0,
-        "blue": 1,
-        "green": 1
+        "green": 1,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
       }
     },
     {
       "health": {
         "red": 1,
-        "blue": 3,
-        "green": 4
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 4,
+        "green": 2,
+        "blue": 4
       }
     }
   ]

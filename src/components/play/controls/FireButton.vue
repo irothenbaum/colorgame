@@ -7,6 +7,7 @@ import {useLongPress} from '@/composables/useLongPress'
 import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
 import {storeToRefs} from 'pinia'
 import {getValueFromColor} from '@/helpers/colorUtils.ts'
+import {useTimeout} from '@/composables/useInterval.ts'
 
 const gameStore = useGameStore()
 const playerStore = usePlayerStore()
@@ -30,7 +31,7 @@ const {pressing, events} = useLongPress(
     playerStore.handleFireResult(gameStore.fireShot(activeTrack.value, loadedColor.value))
     const id = nextPulseId++
     pulses.value.push({id, color})
-    setTimeout(() => { pulses.value = pulses.value.filter(p => p.id !== id) }, 500)
+    useTimeout(() => { pulses.value = pulses.value.filter(p => p.id !== id) }, 500)
   },
   () => {
     playerStore.redLoaded = 0

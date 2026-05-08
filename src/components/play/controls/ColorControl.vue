@@ -6,6 +6,7 @@ import {usePlayerStore} from '@/stores/playerStore'
 import {useLongPress} from '@/composables/useLongPress'
 import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
 import {LOCK} from '@/constants/icons'
+import {useTimeout} from '@/composables/useInterval.ts'
 
 const props = defineProps<{
   color: ColorType
@@ -20,7 +21,7 @@ const isReloading = computed<boolean>(() => colorReload.value > 0)
 
 watch(isReloading, (reloading) => {
   if (reloading) {
-    setTimeout(() => { colorReload.value = 0 }, colorReload.value * 1000)
+    useTimeout(() => { colorReload.value = 0 }, colorReload.value * 1000)
   }
 })
 
@@ -33,7 +34,7 @@ const {pressing, events} = useLongPress(
     colorLoaded.value++
     const id = nextPulseId++
     pulses.value.push(id)
-    setTimeout(() => { pulses.value = pulses.value.filter(p => p !== id) }, 500)
+    useTimeout(() => { pulses.value = pulses.value.filter(p => p !== id) }, 500)
   },
   () => {
     colorLoaded.value = 0
