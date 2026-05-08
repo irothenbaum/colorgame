@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from 'vue'
+import {computed, ref, watch} from 'vue'
 import {storeToRefs} from 'pinia'
 import {ColorType} from '@/types/colorTypes'
 import {usePlayerStore} from '@/stores/playerStore'
@@ -18,10 +18,22 @@ const colorReload = refs[`${props.color}Reload` as 'redReload' | 'greenReload' |
 
 const isReloading = computed<boolean>(() => colorReload.value > 0)
 
+watch(isReloading, (reloading) => {
+  if (reloading) {
+    setTimeout(() => { colorReload.value = 0 }, colorReload.value * 1000)
+  }
+})
+
+const pulses = ref<number[]>([])
+let nextPulseId = 0
+
 const {pressing, events} = useLongPress(
   () => {
     if (isReloading.value) return
     colorLoaded.value++
+    const id = nextPulseId++
+    pulses.value.push(id)
+    setTimeout(() => { pulses.value = pulses.value.filter(p => p !== id) }, 500)
   },
   () => {
     colorLoaded.value = 0
@@ -31,18 +43,56 @@ const {pressing, events} = useLongPress(
 </script>
 
 <template>
-  <div
-    class="color-control"
-    :class="{[color]: true, reloading: isReloading, pressing: pressing && colorLoaded > 0, active: colorLoaded > 0}"
-    :style="`--label: '${colorLoaded}'`"
-    v-on="events"
-  >
-    <i v-if="isReloading" :class="LOCK" class="lock-icon" />
+  <div class="color-control-wrapper" :class="{[color]: true}">
+    <div
+      class="color-control"
+      :class="{[color]: true, reloading: isReloading, pressing: pressing && colorLoaded > 0, active: colorLoaded > 0}"
+      :style="`--label: '${isReloading ? '' : colorLoaded}'; --reload-duration: ${colorReload}s`"
+      v-on="events"
+    >
+      <i v-if="isReloading" :class="LOCK" class="lock-icon" />
+    </div>
+    <span v-for="id in pulses" :key="id" class="pulse-ring" />
   </div>
 </template>
 
 <style scoped lang="scss">
 @use '../../../styles';
+
+@keyframes reload-progress {
+  from { height: 0% }
+  to   { height: 100% }
+}
+
+@keyframes pulse-expand {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+.color-control-wrapper {
+  height: 100%;
+  width: 100%;
+  position: relative;
+
+  &.red   { --color: var(--color-red); }
+  &.blue  { --color: var(--color-blue); }
+  &.green { --color: var(--color-green); }
+
+  .pulse-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--space-md);
+    background: var(--color);
+    pointer-events: none;
+    animation: pulse-expand 0.5s ease-out forwards;
+  }
+}
 
 .color-control {
   &.red {
@@ -93,6 +143,12 @@ const {pressing, events} = useLongPress(
   }
   &.reloading {
     background: var(--disabled);
+
+    &::before {
+      opacity: 1;
+      height: 100%;
+      animation: reload-progress var(--reload-duration) linear forwards;
+    }
   }
 
   .lock-icon {
