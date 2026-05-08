@@ -2,7 +2,7 @@
 import {computed, ref} from 'vue'
 import type {EnemyState} from '@/types/gameTypes.ts'
 import {colorHealthToColor, getValueFromColor} from '@/helpers/colorUtils.ts'
-import {VERTICAL_UNITS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment.ts'
+import {VERTICAL_UNITS, DAMAGE_FLASH_DURATION_MS, ENEMY_SHRINK_DURATION_MS} from '@/constants/environment.ts'
 import {type EventPayload, EventType, useEvents} from '@/composables/useEvents.ts'
 import {useTimeout} from '@/composables/useInterval.ts'
 
@@ -33,7 +33,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
     animatingHeightCQH.value = renderHeightCQH.value
     const targetHeightCQH = getValueFromColor(payload.debris) * 100 / VERTICAL_UNITS
     requestAnimationFrame(() => { animatingHeightCQH.value = targetHeightCQH })
-    useTimeout(() => { animatingHeightCQH.value = null }, DAMAGE_FLASH_DURATION_MS)
+    useTimeout(() => { animatingHeightCQH.value = null }, ENEMY_SHRINK_DURATION_MS)
   }
 })
 </script>
@@ -48,14 +48,14 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 @use '../../../styles';
 
 @keyframes damage-flash {
-  0%   { opacity: 0.85; }
-  100% { opacity: 0; }
+  0%, 100% { opacity: 0; }
+  50%       { opacity: 1; }
 }
 
 .enemy {
   width: 100%;
   // height set inline based on health
-  transition: height v-bind('DAMAGE_FLASH_DURATION_MS + "ms"') ease-out;
+  transition: height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;
   @include styles.flex-row(var(--space-xs));
   justify-content: space-evenly;
   padding: var(--space-xs);
@@ -76,7 +76,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
     position: absolute;
     inset: 0;
     background-color: white;
-    animation: damage-flash v-bind('DAMAGE_FLASH_DURATION_MS + "ms"') ease-out forwards;
+    animation: damage-flash v-bind('DAMAGE_FLASH_DURATION_MS + "ms"') steps(1) 4 forwards;
     pointer-events: none;
     z-index: 3;
   }

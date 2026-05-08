@@ -2,7 +2,7 @@
 import {watch, onMounted, onUnmounted, ref, computed} from 'vue'
 import {useGameStore} from '@/stores/gameStore.ts'
 import type {EnemyState} from '@/types/gameTypes.ts'
-import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment.ts'
+import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS, ENEMY_SHRINK_DURATION_MS} from '@/constants/environment.ts'
 import {useTimeout, type TimerHandle} from '@/composables/useInterval.ts'
 import type {CSSProperties} from 'vue'
 import {storeToRefs} from 'pinia'
@@ -51,12 +51,11 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   // we know damageDone is defined because the enemy was struck, but typescript doesn't
   const amountStruck = getValueFromColor(payload.damageDone!)
 
-  const msPerUnit = maxTimeToReachBottom.value / VERTICAL_UNITS
-  const unitsElapsed = (endGameTimer.value!.msElapsed() || 0) / msPerUnit
+  const msElapsed = endGameTimer.value ? endGameTimer.value.msElapsed() : 0
+  const unitsRemaining = VERTICAL_UNITS - enemyTipPosition.value
+  const unitsElapsed = msElapsed / transitionDurationMS.value * unitsRemaining
 
-  console.log({timeElapsed: endGameTimer.value!.msElapsed(),unitsElapsed, amountStruck, enemyTipPosition: enemyTipPosition.value})
-
-  enemyTipPosition.value = enemyTipPosition.value - amountStruck + unitsElapsed
+  enemyTipPosition.value = enemyTipPosition.value + unitsElapsed - amountStruck
   isMoving.value = false
   useTimeout(() => { isMoving.value = true }, DAMAGE_FLASH_DURATION_MS)
 })
@@ -101,12 +100,12 @@ const styles = computed<CSSProperties>(() => {
   if (isMoving.value) {
     return {
       transform: `translateY(100%)`,
-      transitionDuration: transitionDurationMS.value + 'ms',
+      transitionDuration: `${transitionDurationMS.value}ms`,
     }
   } else {
     return {
-      transform: `translateY(${enemyTipPosition.value}cqh)`,
-      transitionDuration: `0s`,
+      transform: `translateY(${100 * enemyTipPosition.value / VERTICAL_UNITS}cqh)`,
+      transitionDuration: `${ENEMY_SHRINK_DURATION_MS}ms`,
     }
   }
 })
