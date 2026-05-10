@@ -6,9 +6,11 @@ export function colorHealthToColor(type: ColorValue): string {
     return 'black'
   }
 
-  const redPercent = type.red / totalValue
-  const greenPercent = type.green / totalValue
-  const bluePercent = type.blue / totalValue
+  const maxValue = Math.max(type.red, type.green, type.blue)
+
+  const redPercent = type.red / maxValue
+  const greenPercent = type.green / maxValue
+  const bluePercent = type.blue / maxValue
 
   const redHex = Math.round(redPercent * 255).toString(16).padStart(2, '0')
   const greenHex = Math.round(greenPercent * 255).toString(16).padStart(2, '0')
