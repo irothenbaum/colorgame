@@ -7,7 +7,7 @@ import { usePlayerStore } from '@/stores/playerStore.ts'
 import {instantiateEnemies} from '@/helpers/gameUtils.ts'
 import type {ColorValue} from '@/types/colorTypes.ts'
 import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
-import {EventType, useEvents} from '@/composables/useEvents.ts'
+import {EventType, useEvents, type EventPayload} from '@/composables/useEvents.ts'
 
 
 export interface GameStore extends Reactive<GameState> {
@@ -23,7 +23,12 @@ export const useGameStore = defineStore('game', (): GameStore => {
   const currentLevel = ref<GameState['currentLevel']>(undefined)
   const worldState = ref<GameState['worldState']>(undefined)
   const levelsCompleted = computed<GameState['levelsCompleted']>(() => results.value.length)
-  const {broadcast} = useEvents() // to trigger reactivity in tests when we call fireShot and update worldState.enemiesLookup
+  const {broadcast, on} = useEvents()
+
+  on(EventType.EnemyDestroyed, (payload: EventPayload[EventType.EnemyDestroyed]) => {
+    if (!worldState.value) return
+    worldState.value.killedEnemyIds.push(payload.enemyId)
+  }) // to trigger reactivity in tests when we call fireShot and update worldState.enemiesLookup
 
   const playerStore = usePlayerStore()
 
@@ -108,10 +113,9 @@ export const useGameStore = defineStore('game', (): GameStore => {
       if (retVal.debris) {
         // if the enemy is damaged but not destroyed, update its health in the world state
         worldState.value!.enemiesLookup[firstEnemy.id].healthRemaining = retVal.debris
-      } else {
-        // enemy is destroyed
-        worldState.value!.killedEnemyIds.push(firstEnemy.id)
       }
+      // if no debris, enemy is destroyed — but we defer killedEnemyIds until the Enemy component
+      // finishes its animation and broadcasts EnemyDestroyed
     } else {
       retVal.struckEnemy = false
       retVal.shrapnel = color // 100% shrapnel if it misses entirely

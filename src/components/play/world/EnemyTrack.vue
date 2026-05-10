@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {watch, onMounted, onUnmounted, ref, computed} from 'vue'
+import {onMounted, onUnmounted, ref, computed} from 'vue'
 import {useGameStore} from '@/stores/gameStore.ts'
 import type {EnemyState} from '@/types/gameTypes.ts'
-import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS, ENEMY_SHRINK_DURATION_MS} from '@/constants/environment.ts'
+import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment.ts'
 import {useTimeout, type TimerHandle} from '@/composables/useInterval.ts'
 import type {CSSProperties} from 'vue'
 import {storeToRefs} from 'pinia'
@@ -40,55 +40,51 @@ const spawnedEnemies = computed<EnemyState[]>(() => {
   return enemiesToKill.value.slice(0, VERTICAL_UNITS).reverse()
 })
 
+function currentVisualPosition(): number {
+  if (!isMoving.value || transitionDurationMS.value === 0) return enemyTipPosition.value
+  const msElapsed = endGameTimer.value ? endGameTimer.value.msElapsed() : 0
+  const unitsRemaining = VERTICAL_UNITS - enemyTipPosition.value
+  return enemyTipPosition.value + (msElapsed / transitionDurationMS.value) * unitsRemaining
+}
+
+function resumeMoving() {
+  endGameTimer.value?.cancel()
+  const tipPositionRatio = (VERTICAL_UNITS - enemyTipPosition.value) / VERTICAL_UNITS
+  const delay = tipPositionRatio * maxTimeToReachBottom.value
+  transitionDurationMS.value = delay
+  endGameTimer.value = useTimeout(() => {
+    console.log('GAME OVER: ENEMY HIT THE BOTTOM')
+    // gameStore.endLevel()
+  }, delay)
+  isMoving.value = true
+}
+
 const {on} = useEvents()
 
 on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
-  console.log('shot fired event received in EnemyTrack', payload)
-  if (payload.track !== props.trackIndex || !payload.struckEnemyId) {
-    return
-  }
+  if (payload.track !== props.trackIndex || !payload.struckEnemyId) return
 
-  // we know damageDone is defined because the enemy was struck, but typescript doesn't
   const amountStruck = getValueFromColor(payload.damageDone!)
+  if (amountStruck === 0) return
 
-  const msElapsed = endGameTimer.value ? endGameTimer.value.msElapsed() : 0
-  const unitsRemaining = VERTICAL_UNITS - enemyTipPosition.value
-  const unitsElapsed = msElapsed / transitionDurationMS.value * unitsRemaining
-
-  enemyTipPosition.value = enemyTipPosition.value + unitsElapsed - amountStruck
+  // Capture visual position before cancelling the timer
+  const snappedPosition = Math.max(0, currentVisualPosition() - amountStruck)
+  console.log('Snapping to position', snappedPosition)
+  endGameTimer.value?.cancel()
+  endGameTimer.value = null
+  // Snap position and stop moving together so the browser paints the correct resting position.
+  // resumeMoving must fire in a later frame so the browser has committed the snap before the
+  // transition to translateY(100%) begins — otherwise both land in the same frame and the
+  // track animates from the old bottom position instead of jumping up.
+  enemyTipPosition.value = snappedPosition
   isMoving.value = false
-  useTimeout(() => { isMoving.value = true }, DAMAGE_FLASH_DURATION_MS)
+  requestAnimationFrame(() => {
+    useTimeout(resumeMoving, DAMAGE_FLASH_DURATION_MS)
+  })
 })
 
-watch(
-  [enemyTipPosition, isMoving],
-  () => {
-    // if we're not moving, we pause
-    if (!isMoving.value) {
-      endGameTimer.value?.cancel()
-      endGameTimer.value = null
-      return
-    }
-
-    // showing my work here but basically juts calculating when the tip would hit the bottom
-    const tipPositionRatio = (VERTICAL_UNITS - enemyTipPosition.value) / VERTICAL_UNITS
-    const delay = tipPositionRatio * maxTimeToReachBottom.value
-    endGameTimer.value = useTimeout(() => {
-      console.log('GAME OVER: ENEMY HIT THE BOTTOM')
-      // gameStore.endLevel()
-    }, delay)
-    transitionDurationMS.value = delay
-  },
-  {
-    immediate: true,
-  },
-)
-
 onMounted(() => {
-  useTimeout(() => {
-    // this ensures our inline styles can be applied
-    isMoving.value = true
-  }, 1000)
+  useTimeout(resumeMoving, 100)
 })
 
 onUnmounted(() => {
@@ -96,16 +92,18 @@ onUnmounted(() => {
 })
 
 const styles = computed<CSSProperties>(() => {
-  console.log(isMoving.value, enemyTipPosition.value)
   if (isMoving.value) {
+    console.log('Moving with transition duration', transitionDurationMS.value)
     return {
       transform: `translateY(100%)`,
       transitionDuration: `${transitionDurationMS.value}ms`,
+      transitionTimingFunction: 'linear',
     }
   } else {
+    console.log('Not moving, snapping to position', enemyTipPosition.value, (100 * enemyTipPosition.value / VERTICAL_UNITS))
     return {
       transform: `translateY(${100 * enemyTipPosition.value / VERTICAL_UNITS}cqh)`,
-      transitionDuration: `${ENEMY_SHRINK_DURATION_MS}ms`,
+      transitionDuration: `0s`,
     }
   }
 })
@@ -127,13 +125,13 @@ const styles = computed<CSSProperties>(() => {
   height: 100%;
   width: 100%;
   background: var(--color-track-bg);
+  container-type: size;
 
   .enemies-container {
     position: absolute;
     width: 100%;
     height: 100%;
     top: -100%; // just off screen at the top
-    container-type: size;
     transition: transform 30s linear;
     transition-duration: 30s; // default value, will be overridden by inline styles
 

@@ -12,35 +12,55 @@ const props = defineProps<{
 
 const enemyColor = computed(() => colorHealthToColor(props.enemy.healthRemaining))
 const healthValue = computed(() => getValueFromColor(props.enemy.healthRemaining))
-const renderHeightCQH = computed(() => healthValue.value * 100 / VERTICAL_UNITS) // each health point is worth 0.5cqh in height
+const renderHeightCQH = computed(() => healthValue.value * 100 / VERTICAL_UNITS)
 
 const isFlashing = ref(false)
-const animatingHeightCQH = ref<number | null>(null)
+const isDestroyed = ref(false)
+// Drives the visual height during shrink animation. null = use renderHeightCQH
+const visualHeightCQH = ref<number | null>(null)
+const displayHeightCQH = computed(() => visualHeightCQH.value ?? renderHeightCQH.value)
+// Container follows the animated height so the track doesn't jump when the enemy is killed
+const containerHeightCQH = computed(() => displayHeightCQH.value)
 
-const displayHeightCQH = computed(() =>
-  animatingHeightCQH.value !== null ? animatingHeightCQH.value : renderHeightCQH.value
-)
-
-const {on} = useEvents()
+const {on, broadcast} = useEvents()
 
 on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   if (payload.struckEnemyId !== props.enemy.id) return
+  if (getValueFromColor(payload.damageDone!) === 0) return
+
+  const targetHeightCQH = payload.debris ? getValueFromColor(payload.debris) * 100 / VERTICAL_UNITS : 0
+
+  // Start from current rendered height before the prop updates
+  visualHeightCQH.value = renderHeightCQH.value
 
   isFlashing.value = true
-  useTimeout(() => { isFlashing.value = false }, DAMAGE_FLASH_DURATION_MS)
 
-  if (payload.debris) {
-    animatingHeightCQH.value = renderHeightCQH.value
-    const targetHeightCQH = getValueFromColor(payload.debris) * 100 / VERTICAL_UNITS
-    requestAnimationFrame(() => { animatingHeightCQH.value = targetHeightCQH })
-    useTimeout(() => { animatingHeightCQH.value = null }, ENEMY_SHRINK_DURATION_MS)
-  }
+  // After one frame, trigger the shrink transition
+  requestAnimationFrame(() => {
+    visualHeightCQH.value = targetHeightCQH
+    if (targetHeightCQH === 0) isDestroyed.value = true
+  })
+
+  // Flash ends at DAMAGE_FLASH_DURATION_MS — track resumes then
+  useTimeout(() => {
+    isFlashing.value = false
+  }, DAMAGE_FLASH_DURATION_MS)
+
+  // Shrink finishes at DAMAGE_FLASH_DURATION_MS + ENEMY_SHRINK_DURATION_MS
+  useTimeout(() => {
+    visualHeightCQH.value = null
+    if (!payload.debris) {
+      broadcast(EventType.EnemyDestroyed, {enemyId: props.enemy.id})
+    }
+  }, DAMAGE_FLASH_DURATION_MS + ENEMY_SHRINK_DURATION_MS)
 })
 </script>
 
 <template>
-  <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: enemyColor, height: displayHeightCQH + 'cqh'}">
-    <span v-for="i in healthValue" :key="i" />
+  <div class="enemy-container" :style="{height: containerHeightCQH + 'cqh'}">
+    <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: enemyColor, height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}">
+      <span v-for="i in healthValue" :key="i" />
+    </div>
   </div>
 </template>
 
@@ -52,10 +72,18 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   50%       { opacity: 1; }
 }
 
+.enemy-container {
+  width: 100%;
+  overflow: visible;
+  position: relative;
+}
+
 .enemy {
   width: 100%;
-  // height set inline based on health
-  transition: height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;
+  position: absolute;
+  bottom: 0;
+  transition: height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
+              padding v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;
   @include styles.flex-row(var(--space-xs));
   justify-content: space-evenly;
   padding: var(--space-xs);
@@ -76,7 +104,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
     position: absolute;
     inset: 0;
     background-color: white;
-    animation: damage-flash v-bind('DAMAGE_FLASH_DURATION_MS + "ms"') steps(1) 4 forwards;
+    animation: damage-flash v-bind('(DAMAGE_FLASH_DURATION_MS / 4) + "ms"') steps(2, end) 4 forwards;
     pointer-events: none;
     z-index: 3;
   }

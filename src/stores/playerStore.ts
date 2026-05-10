@@ -48,7 +48,7 @@ export const usePlayerStore = defineStore('player', (): PlayerStore => {
   })
 
   function handleFireResult(result: FireResult) {
-    if (!result.success) {
+    if (!result.struckEnemy) {
       // if the shot missed, all loaded colors go into reload
       redReload.value += redLoaded.value
       greenReload.value += greenLoaded.value
