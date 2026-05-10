@@ -6,8 +6,44 @@
     {
       "health": {
         "red": 1,
-        "green": 2,
-        "blue": 3
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      },
+      "type": "spacer"
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
       }
     },
     {
@@ -35,21 +71,42 @@
       "health": {
         "red": 1,
         "green": 0,
-        "blue": 1
+        "blue": 0
       }
     },
     {
       "health": {
         "red": 0,
         "green": 1,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
         "blue": 1
       }
     },
     {
       "health": {
-        "red": 4,
-        "green": 2,
-        "blue": 4
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
       }
     }
   ]

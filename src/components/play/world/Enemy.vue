@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, ref} from 'vue'
 import type {EnemyState} from '@/types/gameTypes.ts'
+import {EnemyType} from '@/types/gameTypes.ts'
 import {colorHealthToColor, getValueFromColor} from '@/helpers/colorUtils.ts'
 import {VERTICAL_UNITS, DAMAGE_FLASH_DURATION_MS, ENEMY_SHRINK_DURATION_MS} from '@/constants/environment.ts'
 import {type EventPayload, EventType, useEvents} from '@/composables/useEvents.ts'
@@ -47,7 +48,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 </script>
 
 <template>
-  <div class="enemy-container" :style="{height: displayHeightCQH + 'cqh'}">
+  <div class="enemy-container" :class="{[enemy.type]: true}" :style="{height: displayHeightCQH + 'cqh'}">
     <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: colorHealthToColor(enemy.healthRemaining), height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}">
       <span v-for="i in healthValue" :key="i" />
     </div>
@@ -66,6 +67,10 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   width: 100%;
   overflow: visible;
   position: relative;
+
+  &.spacer {
+    opacity: 0;
+  }
 }
 
 .enemy {

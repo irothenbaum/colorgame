@@ -1,12 +1,12 @@
 import type { LevelDefinition, EnemyDefinition, EnemyState } from '../types/gameTypes';
-
+import { EnemyType } from '../types/gameTypes';
 import {v4 as uuid} from 'uuid';
-import type {ColorValue} from '@/types/colorTypes.ts'
 
 export function instantiateEnemy(enemyDef: EnemyDefinition, trackCount: number): EnemyState {
   return {
     ...enemyDef,
     id: uuid(),
+    type: enemyDef.type || EnemyType.Pixel, // default to Pixel if type is not defined
     track: enemyDef.track !== undefined ? enemyDef.track % trackCount : Math.floor(Math.random() * trackCount), // assign track based on definition or randomly
     healthRemaining: enemyDef.health
   }

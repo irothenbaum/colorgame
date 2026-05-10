@@ -85,7 +85,9 @@ export const useGameStore = defineStore('game', (): GameStore => {
     }
 
     const firstEnemy = Object.values(worldState.value!.enemiesLookup).filter(
-      e => e.track === track && !worldState.value!.killedEnemyIds.includes(e.id) && getValueFromColor(e.healthRemaining) > 0
+      e => e.track === track
+        && !worldState.value!.killedEnemyIds.includes(e.id)
+        && getValueFromColor(e.healthRemaining) > 0
     )[0]
 
     if (firstEnemy) {

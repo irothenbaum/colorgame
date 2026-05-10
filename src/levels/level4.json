@@ -44,7 +44,8 @@
         "red": 1,
         "blue": 3,
         "green": 4
-      }
+      },
+      "type": "spacer"
     },
     {
       "health": {
@@ -86,7 +87,8 @@
         "red": 1,
         "blue": 3,
         "green": 4
-      }
+      },
+      "type": "spacer"
     },
     {
       "health": {
@@ -128,7 +130,8 @@
         "red": 1,
         "blue": 3,
         "green": 4
-      }
+      },
+      "type": "spacer"
     },
     {
       "health": {

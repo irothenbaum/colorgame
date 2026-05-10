@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref, computed} from 'vue'
+import {onMounted, onUnmounted, ref, computed, watch} from 'vue'
 import {useGameStore} from '@/stores/gameStore.ts'
 import type {EnemyState} from '@/types/gameTypes.ts'
+import {EnemyType} from '@/types/gameTypes.ts'
 import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment.ts'
 import {useTimeout, type TimerHandle} from '@/composables/useInterval.ts'
 import type {CSSProperties} from 'vue'
@@ -63,6 +64,16 @@ function resumeMoving() {
   isMoving.value = true
 }
 
+function pauseAndResume(newPosition: number, pauseMs: number) {
+  endGameTimer.value?.cancel()
+  endGameTimer.value = null
+  enemyTipPosition.value = newPosition
+  isMoving.value = false
+  requestAnimationFrame(() => {
+    useTimeout(resumeMoving, pauseMs)
+  })
+}
+
 const {on} = useEvents()
 
 on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
@@ -71,21 +82,19 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   const amountStruck = getValueFromColor(payload.damageDone!)
   if (amountStruck === 0) return
 
-  // Capture visual position before cancelling the timer
-  const snappedPosition = Math.max(0, currentVisualPosition() - amountStruck)
-  console.log('Snapping to position', snappedPosition)
-  endGameTimer.value?.cancel()
-  endGameTimer.value = null
-  // Snap position and stop moving together so the browser paints the correct resting position.
-  // resumeMoving must fire in a later frame so the browser has committed the snap before the
-  // transition to translateY(100%) begins — otherwise both land in the same frame and the
-  // track animates from the old bottom position instead of jumping up.
-  enemyTipPosition.value = snappedPosition
-  isMoving.value = false
-  requestAnimationFrame(() => {
-    useTimeout(resumeMoving, DAMAGE_FLASH_DURATION_MS)
-  })
+  pauseAndResume(Math.max(0, currentVisualPosition() - amountStruck), DAMAGE_FLASH_DURATION_MS)
 })
+
+watch(
+  () => spawnedEnemies.value[spawnedEnemies.value.length - 1],
+  (leadEnemy) => {
+    if (leadEnemy?.type === EnemyType.Spacer) {
+      const position = Math.max(0, currentVisualPosition() - getValueFromColor(leadEnemy.healthRemaining))
+      worldState.value!.killedEnemyIds.push(leadEnemy.id)
+      pauseAndResume(position, 0)
+    }
+  },
+)
 
 onMounted(() => {
   useTimeout(resumeMoving, 100)

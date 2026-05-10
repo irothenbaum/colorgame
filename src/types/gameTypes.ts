@@ -8,7 +8,7 @@ export enum Scene {
 
 export enum EnemyType {
   Pixel = 'pixel',
-  // TODO: more types
+  Spacer = 'spacer',
 }
 
 export interface EnemyDefinition {
