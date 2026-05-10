@@ -85,7 +85,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     }
 
     const firstEnemy = Object.values(worldState.value!.enemiesLookup).filter(
-      e => e.track === track && !worldState.value!.killedEnemyIds.includes(e.id)
+      e => e.track === track && !worldState.value!.killedEnemyIds.includes(e.id) && getValueFromColor(e.healthRemaining) > 0
     )[0]
 
     if (firstEnemy) {
@@ -111,11 +111,12 @@ export const useGameStore = defineStore('game', (): GameStore => {
       }
 
       if (retVal.debris) {
-        // if the enemy is damaged but not destroyed, update its health in the world state
         worldState.value!.enemiesLookup[firstEnemy.id].healthRemaining = retVal.debris
+      } else {
+        // Enemy is destroyed — zero out health immediately so the next shot targets the next enemy,
+        // but don't add to killedEnemyIds yet (that happens after the animation via EnemyDestroyed)
+        worldState.value!.enemiesLookup[firstEnemy.id].healthRemaining = {red: 0, green: 0, blue: 0}
       }
-      // if no debris, enemy is destroyed — but we defer killedEnemyIds until the Enemy component
-      // finishes its animation and broadcasts EnemyDestroyed
     } else {
       retVal.struckEnemy = false
       retVal.shrapnel = color // 100% shrapnel if it misses entirely

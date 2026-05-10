@@ -10,17 +10,12 @@ const props = defineProps<{
   enemy: EnemyState
 }>()
 
-const enemyColor = computed(() => colorHealthToColor(props.enemy.healthRemaining))
 const healthValue = computed(() => getValueFromColor(props.enemy.healthRemaining))
-const renderHeightCQH = computed(() => healthValue.value * 100 / VERTICAL_UNITS)
 
 const isFlashing = ref(false)
 const isDestroyed = ref(false)
-// Drives the visual height during shrink animation. null = use renderHeightCQH
 const visualHeightCQH = ref<number | null>(null)
-const displayHeightCQH = computed(() => visualHeightCQH.value ?? renderHeightCQH.value)
-// Container follows the animated height so the track doesn't jump when the enemy is killed
-const containerHeightCQH = computed(() => displayHeightCQH.value)
+const displayHeightCQH = computed(() => visualHeightCQH.value ?? healthValue.value * 100 / VERTICAL_UNITS)
 
 const {on, broadcast} = useEvents()
 
@@ -30,23 +25,18 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 
   const targetHeightCQH = payload.debris ? getValueFromColor(payload.debris) * 100 / VERTICAL_UNITS : 0
 
-  // Start from current rendered height before the prop updates
-  visualHeightCQH.value = renderHeightCQH.value
-
+  visualHeightCQH.value = healthValue.value * 100 / VERTICAL_UNITS
   isFlashing.value = true
 
-  // After one frame, trigger the shrink transition
   requestAnimationFrame(() => {
     visualHeightCQH.value = targetHeightCQH
     if (targetHeightCQH === 0) isDestroyed.value = true
   })
 
-  // Flash ends at DAMAGE_FLASH_DURATION_MS — track resumes then
   useTimeout(() => {
     isFlashing.value = false
   }, DAMAGE_FLASH_DURATION_MS)
 
-  // Shrink finishes at DAMAGE_FLASH_DURATION_MS + ENEMY_SHRINK_DURATION_MS
   useTimeout(() => {
     visualHeightCQH.value = null
     if (!payload.debris) {
@@ -57,8 +47,8 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 </script>
 
 <template>
-  <div class="enemy-container" :style="{height: containerHeightCQH + 'cqh'}">
-    <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: enemyColor, height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}">
+  <div class="enemy-container" :style="{height: displayHeightCQH + 'cqh'}">
+    <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: colorHealthToColor(enemy.healthRemaining), height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}">
       <span v-for="i in healthValue" :key="i" />
     </div>
   </div>
