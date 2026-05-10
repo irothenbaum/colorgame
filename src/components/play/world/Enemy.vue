@@ -70,7 +70,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 
 .enemy {
   width: 100%;
-  position: absolute;
+  height: 100%;
   bottom: 0;
   transition: height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
               padding v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;

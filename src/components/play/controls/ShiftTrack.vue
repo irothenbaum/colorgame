@@ -17,7 +17,8 @@ function handleShift() {
   if (!currentLevel.value) {
     return
   }
-  activeTrack.value = (activeTrack.value + props.value) % currentLevel.value!.tracks
+  activeTrack.value = (currentLevel.value!.tracks + activeTrack.value + props.value) % currentLevel.value!.tracks
+  console.log('Shifted to track', activeTrack.value)
 }
 </script>
 
@@ -34,11 +35,12 @@ function handleShift() {
   height: 100%;
   width: 100%;
   background: var(--color-light-grey);
-  border-radius: var(--space-md);
+  border-radius: var(--space-sm);
   container-type: size;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--color-shadow-light);
 
   .sign {
     @include styles.block-text;

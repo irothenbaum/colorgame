@@ -10,6 +10,7 @@ import Enemy from './Enemy.vue'
 import {useEvents, EventType} from '@/composables/useEvents.ts'
 import type {EventPayload} from '@/composables/useEvents.ts'
 import {getValueFromColor} from '@/helpers/colorUtils.ts'
+import {usePlayerStore} from '@/stores/playerStore.ts'
 
 const props = withDefaults(
   defineProps<{
@@ -22,7 +23,9 @@ const props = withDefaults(
 )
 
 const gameStore = useGameStore()
+const playerStore = usePlayerStore()
 const {worldState} = storeToRefs(gameStore)
+const {activeTrack} = storeToRefs(playerStore)
 const isMoving = ref<boolean>(false)
 const enemyTipPosition = ref<number>(0) // the distance of the furthest advanced enemy on the track.
 const endGameTimer = ref<TimerHandle | null>(null)
@@ -93,14 +96,12 @@ onUnmounted(() => {
 
 const styles = computed<CSSProperties>(() => {
   if (isMoving.value) {
-    console.log('Moving with transition duration', transitionDurationMS.value)
     return {
       transform: `translateY(100%)`,
       transitionDuration: `${transitionDurationMS.value}ms`,
       transitionTimingFunction: 'linear',
     }
   } else {
-    console.log('Not moving, snapping to position', enemyTipPosition.value, (100 * enemyTipPosition.value / VERTICAL_UNITS))
     return {
       transform: `translateY(${100 * enemyTipPosition.value / VERTICAL_UNITS}cqh)`,
       transitionDuration: `0s`,
@@ -110,7 +111,7 @@ const styles = computed<CSSProperties>(() => {
 </script>
 
 <template>
-  <div class="enemy-track">
+  <div class="enemy-track" :class="{selected: trackIndex === activeTrack}" >
     <div class="enemies-container" :class="{moving: isMoving}" :style="styles">
       <Enemy v-for="e in spawnedEnemies" v-bind:key="e.id" :enemy="e" />
     </div>
@@ -126,10 +127,29 @@ const styles = computed<CSSProperties>(() => {
   width: 100%;
   background: var(--color-track-bg);
   container-type: size;
+  padding: 0 var(--space-xs);
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-shadow-light);
+    transition: opacity 0.3s ease-out;
+  }
+
+  &.selected {
+    background: var(--color-track-selected-bg);
+    &:after {
+      opacity: 0;
+    }
+  }
 
   .enemies-container {
     position: absolute;
-    width: 100%;
+    left: var(--space-xs);
+    width: calc(100% - 2 * var(--space-xs));
     height: 100%;
     top: -100%; // just off screen at the top
     transition: transform 30s linear;

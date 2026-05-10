@@ -2,6 +2,7 @@
   "id": "level-3",
   "name": "Test Level 3",
   "description": "This is my description",
+  "tracks": 2,
   "enemies": [
     {
       "health": {
@@ -15,7 +16,8 @@
         "red": 0,
         "blue": 1,
         "green": 0
-      }
+      },
+      "track": 1
     },
     {
       "health": {
@@ -29,21 +31,24 @@
         "red": 1,
         "blue": 1,
         "green": 0
-      }
+      },
+      "track": 1
     },
     {
       "health": {
         "red": 0,
         "blue": 1,
         "green": 1
-      }
+      },
+      "track": 1
     },
     {
       "health": {
         "red": 1,
         "blue": 3,
         "green": 4
-      }
+      },
+      "track": 1
     }
   ]
 }

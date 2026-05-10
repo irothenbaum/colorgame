@@ -82,7 +82,7 @@ const label = "PRINT"
     height: 100%;
     width: 100%;
     border: none;
-    border-radius: var(--space-md);
+    border-radius: var(--space-sm);
     cursor: pointer;
     @include styles.block-text;
     @include styles.text-shadow();
@@ -102,7 +102,7 @@ const label = "PRINT"
   .pulse-ring {
     position: absolute;
     inset: 0;
-    border-radius: var(--space-md);
+    border-radius: var(--space-sm);
     pointer-events: none;
     animation: pulse-expand 0.5s ease-out forwards;
   }

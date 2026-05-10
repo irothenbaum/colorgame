@@ -6,7 +6,7 @@ import EnemyTrack from '@/components/play/world/EnemyTrack.vue'
 const gameStore = useGameStore()
 const {currentLevel} = storeToRefs(gameStore)
 
-
+console.log(currentLevel.value!.tracks)
 </script>
 
 <template>
@@ -20,5 +20,7 @@ const {currentLevel} = storeToRefs(gameStore)
 
 .world {
   background: var(--color-track-bg);
+  @include styles.flex-row(0);
+  overflow: hidden;
 }
 </style>
