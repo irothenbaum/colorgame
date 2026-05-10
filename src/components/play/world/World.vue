@@ -5,8 +5,6 @@ import EnemyTrack from '@/components/play/world/EnemyTrack.vue'
 
 const gameStore = useGameStore()
 const {currentLevel} = storeToRefs(gameStore)
-
-console.log(currentLevel.value!.tracks)
 </script>
 
 <template>

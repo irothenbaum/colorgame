@@ -7,6 +7,7 @@ import {useTimeout, type TimerHandle} from '@/composables/useInterval.ts'
 import type {CSSProperties} from 'vue'
 import {storeToRefs} from 'pinia'
 import Enemy from './Enemy.vue'
+import Confetti from './Confetti.vue'
 import {useEvents, EventType} from '@/composables/useEvents.ts'
 import type {EventPayload} from '@/composables/useEvents.ts'
 import {getValueFromColor} from '@/helpers/colorUtils.ts'
@@ -24,7 +25,7 @@ const props = withDefaults(
 
 const gameStore = useGameStore()
 const playerStore = usePlayerStore()
-const {worldState} = storeToRefs(gameStore)
+const {worldState, currentLevel} = storeToRefs(gameStore)
 const {activeTrack} = storeToRefs(playerStore)
 const isMoving = ref<boolean>(false)
 const enemyTipPosition = ref<number>(0) // the distance of the furthest advanced enemy on the track.
@@ -115,6 +116,7 @@ const styles = computed<CSSProperties>(() => {
     <div class="enemies-container" :class="{moving: isMoving}" :style="styles">
       <Enemy v-for="e in spawnedEnemies" v-bind:key="e.id" :enemy="e" />
     </div>
+    <Confetti v-if="spawnedEnemies.length === 0" :count-scale="currentLevel!.tracks" />
   </div>
 </template>
 

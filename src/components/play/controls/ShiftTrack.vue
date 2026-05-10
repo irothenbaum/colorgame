@@ -18,7 +18,6 @@ function handleShift() {
     return
   }
   activeTrack.value = (currentLevel.value!.tracks + activeTrack.value + props.value) % currentLevel.value!.tracks
-  console.log('Shifted to track', activeTrack.value)
 }
 </script>
 

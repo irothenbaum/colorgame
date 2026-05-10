@@ -2,7 +2,134 @@
   "id": "level-4",
   "name": "Test Level 4",
   "description": "This is my description",
+  "tracks": 3,
   "enemies": [
+    {
+      "health": {
+        "red": 1,
+        "blue": 0,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 1,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 0,
+        "green": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 1,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 1,
+        "green": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 3,
+        "green": 4
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 0,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 1,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 0,
+        "green": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 1,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 1,
+        "green": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 3,
+        "green": 4
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 0,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 1,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 0,
+        "green": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 1,
+        "green": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "blue": 1,
+        "green": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "blue": 3,
+        "green": 4
+      }
+    },
     {
       "health": {
         "red": 1,
