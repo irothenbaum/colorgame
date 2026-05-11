@@ -32,6 +32,7 @@ const {activeTrack} = storeToRefs(playerStore)
 const isMoving = ref<boolean>(false)
 const enemyTipPosition = ref<number>(0) // the distance of the furthest advanced enemy on the track.
 const endGameTimer = ref<TimerHandle | null>(null)
+const resumeTimer = ref<TimerHandle | null>(null)
 const transitionDurationMS = ref<number>(0)
 const maxTimeToReachBottom = computed<number>(() => DEFAULT_TIME_TO_REACH_BOTTOM_MS / props.speedMultiplier)
 
@@ -60,7 +61,7 @@ function resumeMoving() {
   transitionDurationMS.value = delay
   endGameTimer.value = useTimeout(() => {
     console.log('GAME OVER: ENEMY HIT THE BOTTOM')
-    broadcast(EventType.LevelLost)
+    broadcast(EventType.LevelLost, {trackId: props.trackIndex})
   }, delay)
   isMoving.value = true
 }
@@ -71,7 +72,7 @@ function pauseAndResume(newPosition: number, pauseMs: number) {
   enemyTipPosition.value = newPosition
   isMoving.value = false
   requestAnimationFrame(() => {
-    useTimeout(resumeMoving, pauseMs)
+    resumeTimer.value = useTimeout(resumeMoving, pauseMs)
   })
 }
 
@@ -104,6 +105,8 @@ watch(
       enemyTipPosition.value = currentVisualPosition()
       endGameTimer.value?.cancel()
       endGameTimer.value = null
+      resumeTimer.value?.cancel()
+      resumeTimer.value = null
       isMoving.value = false
     } else if (playState === PlayState.Playing) {
       resumeMoving()
