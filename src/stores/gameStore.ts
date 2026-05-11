@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import {type EnemyState, Scene} from '@/types/gameTypes.ts'
+import {ref, computed, watch} from 'vue'
+import {PlayState, Scene, EnemyType} from '@/types/gameTypes.ts'
 import type {GameState, LevelDefinition, FireResult} from '@/types/gameTypes.ts'
 import type { Reactive, } from '@/types/utilityTypes.ts'
 import { usePlayerStore } from '@/stores/playerStore.ts'
@@ -24,6 +24,31 @@ export const useGameStore = defineStore('game', (): GameStore => {
   const worldState = ref<GameState['worldState']>(undefined)
   const levelsCompleted = computed<GameState['levelsCompleted']>(() => results.value.length)
   const {broadcast, on} = useEvents()
+
+  // watch for game end
+  watch(() => worldState.value?.killedEnemyIds, (ids) => {
+    if (!ids || ids.length === 0) {
+      return
+    }
+    // if we've killed as many enemies as we have spawned, the level must be over
+    if (ids.length === Object.keys(worldState.value!.enemiesLookup).length) {
+      worldState.value!.playState = PlayState.Won
+    }
+  })
+
+  on(EventType.LevelLost, () => {
+    worldState.value!.playState = PlayState.Lost
+  })
+
+  on(EventType.TogglePause, (nowPaused) => {
+    console.log("TOGGLING PAUSE " + nowPaused)
+    // can only toggle pause if paused or playing
+    if (!worldState.value || ![PlayState.Paused, PlayState.Playing].includes(worldState.value.playState)) {
+      return
+    }
+
+    worldState.value.playState = nowPaused ? PlayState.Paused : PlayState.Playing
+  })
 
   on(EventType.EnemyDestroyed, (payload: EventPayload[EventType.EnemyDestroyed]) => {
     if (!worldState.value) return
@@ -49,7 +74,10 @@ export const useGameStore = defineStore('game', (): GameStore => {
       levelId: currentLevel.value.id,
       score: worldState.value.score,
       maxCombo: worldState.value.maxCombo,
-      killedEnemyIds: worldState.value.killedEnemyIds
+      killedEnemyIds: worldState.value.killedEnemyIds,
+      shotsFired: worldState.value.shotsFired,
+      totalWaste: worldState.value.totalWaste,
+      totalEnemies: worldState.value.totalEnemies,
     })
 
     // Clear current level and world state
@@ -73,11 +101,17 @@ export const useGameStore = defineStore('game', (): GameStore => {
       score: 0,
       maxCombo: 0,
       killedEnemyIds: [],
+      shotsFired: 0,
+      totalWaste: 0,
+      totalEnemies: level.enemies.filter(e => e.type !== EnemyType.Spacer).length,
       enemiesLookup: instantiateEnemies(level),
+      playState: PlayState.Playing
     }
   }
 
   function fireShot(track: number, color: ColorValue): FireResult {
+    worldState.value!.shotsFired++
+
     const retVal: FireResult = {
       struckEnemy: true,
       projectile: color,
@@ -102,13 +136,15 @@ export const useGameStore = defineStore('game', (): GameStore => {
 
       // what's left of the shot after hitting the enemy
       retVal.shrapnel = collideColors(color, firstEnemy.healthRemaining)
+      const shrapnelValue = getValueFromColor(retVal.shrapnel)
 
-      if (getValueFromColor(retVal.shrapnel) === 0) {
+      if (shrapnelValue === 0) {
         // shot is fully absorbed, no shrapnel
         retVal.damageDone = color
         delete retVal.shrapnel
       } else {
         // shot is partially absorbed, shrapnel is what's left of the shot, and damage done is the difference between the original shot and the shrapnel
+        worldState.value!.totalWaste += shrapnelValue
         retVal.damageDone = collideColors(color, retVal.shrapnel)
       }
 

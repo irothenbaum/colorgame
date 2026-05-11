@@ -22,11 +22,17 @@ export function useEvents() {
 export enum EventType {
   ShotFired = 'shot-fired',
   EnemyDestroyed = 'enemy-destroyed',
+  TogglePause = 'toggle-pause',
+  LevelLost = 'level-lost',
+  LevelWon = 'level-won'
 }
 
 export interface EventPayload {
   [EventType.ShotFired]: FireResult
   [EventType.EnemyDestroyed]: {
     enemyId: string
-  }
+  },
+  [EventType.TogglePause]: boolean,
+  [EventType.LevelWon]: undefined,
+  [EventType.LevelLost]: undefined,
 }

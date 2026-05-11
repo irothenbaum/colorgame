@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import {computed, ref, watchEffect} from 'vue'
 import type {EnemyState} from '@/types/gameTypes.ts'
 import {EnemyType} from '@/types/gameTypes.ts'
 import {colorHealthToColor, getValueFromColor} from '@/helpers/colorUtils.ts'
@@ -12,6 +12,11 @@ const props = defineProps<{
 }>()
 
 const healthValue = computed(() => getValueFromColor(props.enemy.healthRemaining))
+
+const displayColor = ref(colorHealthToColor(props.enemy.healthRemaining))
+watchEffect(() => {
+  if (healthValue.value > 0) displayColor.value = colorHealthToColor(props.enemy.healthRemaining)
+})
 
 const isFlashing = ref(false)
 const isDestroyed = ref(false)
@@ -49,7 +54,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 
 <template>
   <div class="enemy-container" :class="{[enemy.type]: true}" :style="{height: displayHeightCQH + 'cqh'}">
-    <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: colorHealthToColor(enemy.healthRemaining), height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}">
+    <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: displayColor, height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}">
       <span v-for="i in healthValue" :key="i" />
     </div>
   </div>

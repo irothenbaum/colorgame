@@ -1,5 +1,12 @@
 import type { ColorValue } from './colorTypes'
 
+export enum PlayState {
+  Playing = 'playing',
+  Paused = 'paused',
+  Won = 'won',
+  Lost = 'lost'
+}
+
 export enum Scene {
   MENU = 'menu',
   PLAY = 'play',
@@ -28,6 +35,9 @@ export interface LevelResult {
   score: number
   maxCombo: number
   killedEnemyIds: string[] // string of enemy ids that have been killed already
+  shotsFired: number
+  totalWaste: number
+  totalEnemies: number
 }
 
 export type FireResult = {
@@ -51,7 +61,8 @@ export interface LevelDefinition {
 }
 
 export interface WorldState extends LevelResult {
-  enemiesLookup: Record<string, EnemyState> // enemies currently visible on the screen
+  enemiesLookup: Record<string, EnemyState>
+  playState: PlayState
 }
 
 export interface GameState {
