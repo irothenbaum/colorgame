@@ -16,7 +16,7 @@ export interface GameStore extends Reactive<GameState> {
   endGame: () => void
   endLevel: () => void
   fireShot: (track: number, color: ColorValue) => FireResult
-  togglePause: () => void
+  togglePause: (nowPaused?: boolean) => void
 }
 
 export const useGameStore = defineStore('game', (): GameStore => {

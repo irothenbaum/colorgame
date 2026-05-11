@@ -2,7 +2,7 @@
 import {onMounted, onUnmounted, ref, computed, watch} from 'vue'
 import {useGameStore} from '@/stores/gameStore.ts'
 import type {EnemyState} from '@/types/gameTypes.ts'
-import {EnemyType} from '@/types/gameTypes.ts'
+import {EnemyType, PlayState} from '@/types/gameTypes.ts'
 import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment.ts'
 import {useTimeout, type TimerHandle} from '@/composables/useInterval.ts'
 import type {CSSProperties} from 'vue'
@@ -93,6 +93,20 @@ watch(
       const position = Math.max(0, currentVisualPosition() - getValueFromColor(leadEnemy.healthRemaining))
       levelState.value!.killedEnemyIds.push(leadEnemy.id)
       pauseAndResume(position, 0)
+    }
+  },
+)
+
+watch(
+  () => levelState.value?.playState,
+  (playState) => {
+    if (playState === PlayState.Paused) {
+      enemyTipPosition.value = currentVisualPosition()
+      endGameTimer.value?.cancel()
+      endGameTimer.value = null
+      isMoving.value = false
+    } else if (playState === PlayState.Playing) {
+      resumeMoving()
     }
   },
 )

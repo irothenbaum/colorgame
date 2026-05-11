@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Menu from './scenes/Menu.vue';
 import Play from './scenes/Play.vue';
+import Results from './scenes/Results.vue';
 import {useGameStore} from '@/stores/gameStore'
 import {storeToRefs} from 'pinia'
 import {Scene} from '@/types/gameTypes'
@@ -13,6 +14,7 @@ const {scene} = storeToRefs(gameStore)
   <div class="game">
     <Menu v-if="scene === Scene.MENU" />
     <Play v-if="scene === Scene.PLAY" />
+    <Results v-if="scene === Scene.RESULTS" />
   </div>
 </template>
 
