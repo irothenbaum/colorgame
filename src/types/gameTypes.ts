@@ -60,7 +60,7 @@ export interface LevelDefinition {
   tracks: number
 }
 
-export interface WorldState extends LevelResult {
+export interface LevelState extends LevelResult {
   enemiesLookup: Record<string, EnemyState>
   playState: PlayState
 }
@@ -72,5 +72,5 @@ export interface GameState {
 
   // these are all undefined if we're not in a level
   currentLevel: LevelDefinition | undefined
-  worldState: WorldState | undefined
+  levelState: LevelState | undefined
 }

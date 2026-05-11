@@ -5,7 +5,7 @@ import {storeToRefs} from 'pinia'
 import EnemyTrack from '@/components/play/world/EnemyTrack.vue'
 
 const gameStore = useGameStore()
-const {currentLevel, worldState} = storeToRefs(gameStore)
+const {currentLevel, levelState} = storeToRefs(gameStore)
 </script>
 
 <template>

@@ -12,17 +12,17 @@ const STEP_PLAY_LEVEL = 1
 
 const step = ref<number>(STEP_LEVEL_SELECT)
 const gameStore = useGameStore()
-const {worldState} = storeToRefs(gameStore)
+const {levelState} = storeToRefs(gameStore)
 
 function handlePlay(level: LevelDefinition) {
-  gameStore.instantiateLevel(level)
+  gameStore.startLevel(level)
   step.value = STEP_PLAY_LEVEL
 }
 </script>
 
 <template>
   <div class="play">
-    <div v-if="worldState!.playState === PlayState.Paused" class="pause-overlay">
+    <div v-if="levelState!.playState === PlayState.Paused" class="pause-overlay">
       PAUSED
     </div>
     <LevelSelect v-if="step === STEP_LEVEL_SELECT" @play="handlePlay" />

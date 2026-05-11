@@ -24,9 +24,10 @@ const props = withDefaults(
   },
 )
 
+const {broadcast} = useEvents()
 const gameStore = useGameStore()
 const playerStore = usePlayerStore()
-const {worldState, currentLevel} = storeToRefs(gameStore)
+const {levelState, currentLevel} = storeToRefs(gameStore)
 const {activeTrack} = storeToRefs(playerStore)
 const isMoving = ref<boolean>(false)
 const enemyTipPosition = ref<number>(0) // the distance of the furthest advanced enemy on the track.
@@ -35,10 +36,10 @@ const transitionDurationMS = ref<number>(0)
 const maxTimeToReachBottom = computed<number>(() => DEFAULT_TIME_TO_REACH_BOTTOM_MS / props.speedMultiplier)
 
 const enemiesOnTrack = computed<EnemyState[]>(() => {
-  return Object.values(worldState.value!.enemiesLookup).filter(e => e.track === props.trackIndex)
+  return Object.values(levelState.value!.enemiesLookup).filter(e => e.track === props.trackIndex)
 })
 const enemiesToKill = computed<EnemyState[]>(() => {
-  return enemiesOnTrack.value.filter(e => !worldState.value!.killedEnemyIds.includes(e.id))
+  return enemiesOnTrack.value.filter(e => !levelState.value!.killedEnemyIds.includes(e.id))
 })
 const spawnedEnemies = computed<EnemyState[]>(() => {
   // can't possibly be more than VERTICAL_UNITS enemies on the track at once, so we can just take that many at a time
@@ -59,7 +60,7 @@ function resumeMoving() {
   transitionDurationMS.value = delay
   endGameTimer.value = useTimeout(() => {
     console.log('GAME OVER: ENEMY HIT THE BOTTOM')
-    // gameStore.endLevel()
+    broadcast(EventType.LevelLost)
   }, delay)
   isMoving.value = true
 }
@@ -90,7 +91,7 @@ watch(
   (leadEnemy) => {
     if (leadEnemy?.type === EnemyType.Spacer) {
       const position = Math.max(0, currentVisualPosition() - getValueFromColor(leadEnemy.healthRemaining))
-      worldState.value!.killedEnemyIds.push(leadEnemy.id)
+      levelState.value!.killedEnemyIds.push(leadEnemy.id)
       pauseAndResume(position, 0)
     }
   },
