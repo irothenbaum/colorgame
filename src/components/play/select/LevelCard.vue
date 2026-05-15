@@ -37,7 +37,7 @@ const buttonTextColor = computed<string>(() => {
 </template>
 
 <style scoped lang="scss">
-@use '../../styles';
+@use '../../../styles';
 
 .level-card {
   height: 100%;

@@ -1,11 +1,30 @@
 <script setup lang="ts">
-import Controls from './controls/Controls.vue';
-import World from './world/World.vue';
-import {useGameStore} from '@/stores/gameStore.ts'
+import {watch} from 'vue'
+import Controls from './controls/Controls.vue'
+import World from './world/World.vue'
 import {storeToRefs} from 'pinia'
+import {useGameStore} from '@/stores/gameStore.ts'
+import {useEvents, EventType} from '@/composables/useEvents.ts'
 
 const gameStore = useGameStore()
-const {currentLevel} = storeToRefs(gameStore)
+const {levelState} = storeToRefs(gameStore)
+
+const {broadcast} = useEvents()
+// watch for game end
+watch(
+  () => levelState.value?.killedEnemyIds,
+  ids => {
+    if (!ids || ids.length === 0) {
+      return
+    }
+    // if we've killed as many enemies as we have spawned, the level must be over
+    if (ids.length === Object.keys(levelState.value!.enemiesLookup).length) {
+      // indicate what track the last enemy was on, so we can trigger the right win animation
+      broadcast(EventType.LevelWon, levelState.value!.enemiesLookup[ids[ids.length - 1]].track)
+    }
+  },
+  {deep: true},
+)
 </script>
 
 <template>
@@ -33,7 +52,7 @@ const {currentLevel} = storeToRefs(gameStore)
 
   .controls {
     width: 100%;
-    height: calc((100cqw - 4 * var(--controls-gutter-size)) * 2 / 3 + 3 * var(--controls-gutter-size));
+    height: var(--controls-height);
   }
 }
 </style>

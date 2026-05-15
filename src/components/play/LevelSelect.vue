@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type {LevelDefinition} from '@/types/gameTypes.ts'
 import {loadAllLevels} from '@/helpers/levelUtils.ts'
-import LevelCard from './LevelCard.vue'
+import LevelCard from './select/LevelCard.vue'
 
 const emit = defineEmits<{
   play: [level: LevelDefinition]

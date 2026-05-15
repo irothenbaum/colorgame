@@ -27,20 +27,36 @@ export const useGameStore = defineStore('game', (): GameStore => {
   const levelsCompleted = computed<GameState['levelsCompleted']>(() => results.value.length)
   const {broadcast, on} = useEvents()
 
-  // watch for game end
-  watch(() => levelState.value?.killedEnemyIds, (ids) => {
-    if (!ids || ids.length === 0) {
+  on(EventType.LevelLost, () => {
+    recordCurrentLevelAsResult(PlayState.Lost)
+  })
+
+  on(EventType.LevelWon, () => {
+    recordCurrentLevelAsResult(PlayState.Won)
+  })
+
+  function recordCurrentLevelAsResult(state: PlayState) {
+    if (!currentLevel.value || !levelState.value) {
+      // this will never happen
       return
     }
-    // if we've killed as many enemies as we have spawned, the level must be over
-    if (ids.length === Object.keys(levelState.value!.enemiesLookup).length) {
-      levelState.value!.playState = PlayState.Won
-    }
-  }, {deep: true})
 
-  on(EventType.LevelLost, () => {
-    levelState.value!.playState = PlayState.Lost
-  })
+    levelState.value!.playState = state
+
+    // Save result
+    results.value = [
+      ...results.value,
+      {
+        levelId: currentLevel.value.id,
+        score: levelState.value.score,
+        maxCombo: levelState.value.maxCombo,
+        killedEnemyIds: levelState.value.killedEnemyIds,
+        shotsFired: levelState.value.shotsFired,
+        totalWaste: levelState.value.totalWaste,
+        totalEnemies: levelState.value.totalEnemies,
+      },
+    ]
+  }
 
   function togglePause(nowPaused?:boolean) {
     // can only toggle pause if paused or playing
@@ -56,7 +72,10 @@ export const useGameStore = defineStore('game', (): GameStore => {
     levelState.value.playState = nowPaused ? PlayState.Paused : PlayState.Playing
   }
   on(EventType.EnemyDestroyed, (payload: EventPayload[EventType.EnemyDestroyed]) => {
-    if (!levelState.value) return
+    console.log("ENEMY DESTROYED " + payload.enemyId)
+    if (!levelState.value) {
+      return
+    }
     levelState.value.killedEnemyIds.push(payload.enemyId)
   }) // to trigger reactivity in tests when we call fireShot and update levelState.enemiesLookup
 
@@ -72,18 +91,9 @@ export const useGameStore = defineStore('game', (): GameStore => {
   }
 
   function endLevel() {
-    if (!currentLevel.value || !levelState.value) return
-
-    // Save result
-    results.value.push({
-      levelId: currentLevel.value.id,
-      score: levelState.value.score,
-      maxCombo: levelState.value.maxCombo,
-      killedEnemyIds: levelState.value.killedEnemyIds,
-      shotsFired: levelState.value.shotsFired,
-      totalWaste: levelState.value.totalWaste,
-      totalEnemies: levelState.value.totalEnemies,
-    })
+    if (!currentLevel.value || !levelState.value) {
+      return
+    }
 
     // Clear current level and world state
     currentLevel.value = undefined

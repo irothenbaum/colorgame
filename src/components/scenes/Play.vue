@@ -7,13 +7,14 @@ import {storeToRefs} from 'pinia'
 import LevelSelect from '@/components/play/LevelSelect.vue'
 import PlayLevel from '@/components/play/PlayLevel.vue'
 import PauseModal from '@/components/play/PauseModal.vue'
+import LevelResults from '@/components/play/LevelResults.vue'
 
 const STEP_LEVEL_SELECT = 0
 const STEP_PLAY_LEVEL = 1
 
 const step = ref<number>(STEP_LEVEL_SELECT)
 const gameStore = useGameStore()
-const {levelState} = storeToRefs(gameStore)
+const {levelState, currentLevel} = storeToRefs(gameStore)
 
 function handlePlay(level: LevelDefinition) {
   gameStore.startLevel(level)
@@ -24,6 +25,11 @@ function handleBack() {
   if (step.value === STEP_PLAY_LEVEL) {
     gameStore.togglePause()
   }
+}
+
+function handleEndLevel() {
+  step.value = STEP_LEVEL_SELECT
+  gameStore.endLevel()
 }
 
 function onPopState() {
@@ -51,6 +57,12 @@ onUnmounted(() => {
 <template>
   <div class="play">
     <PauseModal v-if="levelState?.playState === PlayState.Paused" />
+    <LevelResults
+      v-if="levelState?.playState === PlayState.Won || levelState?.playState === PlayState.Lost"
+      @back="handleEndLevel()"
+      @replay="handlePlay(currentLevel as LevelDefinition)"
+    />
+
     <LevelSelect v-if="step === STEP_LEVEL_SELECT" @play="handlePlay" />
     <PlayLevel v-else-if="step === STEP_PLAY_LEVEL" />
   </div>
@@ -58,6 +70,7 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .play {
+  position: relative;
   height: 100%;
   width: 100%;
 }

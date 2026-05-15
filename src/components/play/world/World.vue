@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import {watch} from 'vue'
 import {useGameStore} from '@/stores/gameStore'
 import {storeToRefs} from 'pinia'
 import EnemyTrack from '@/components/play/world/EnemyTrack.vue'
-import Results from '@/components/play/Results.vue'
-import {PlayState} from '@/types/gameTypes.ts'
 
 const gameStore = useGameStore()
-const {currentLevel, levelState} = storeToRefs(gameStore)
+const {currentLevel} = storeToRefs(gameStore)
 </script>
 
 <template>
   <div class="world">
-    <EnemyTrack v-for="i in currentLevel!.tracks" :key="i" :track-index="i - 1" />
-    <Results v-if="levelState?.playState === PlayState.Won || levelState?.playState === PlayState.Lost" />
+    <template v-if="currentLevel">
+      <EnemyTrack v-for="i in currentLevel.tracks" :key="i" :track-index="i - 1" />
+    </template>
   </div>
 </template>
 
@@ -34,12 +32,7 @@ const {currentLevel, levelState} = storeToRefs(gameStore)
     right: 0;
     bottom: 0;
     height: 2rem;
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.3),
-        rgba(0, 0, 0, 0.1) 30%,
-      rgba(0, 0, 0, 0)
-    );
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1) 30%, rgba(0, 0, 0, 0));
     pointer-events: none;
   }
 }

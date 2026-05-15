@@ -90,4 +90,5 @@ $transitionPause: $transitionPauseSpeed $transitionStepEase;
 
 
   --controls-gutter-size: var(--space-sm);
+  --controls-height: calc((100cqw - 4 * var(--controls-gutter-size)) * 2 / 3 + 3 * var(--controls-gutter-size))
 }

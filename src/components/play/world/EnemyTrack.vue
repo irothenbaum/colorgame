@@ -60,7 +60,6 @@ function resumeMoving() {
   const delay = tipPositionRatio * maxTimeToReachBottom.value
   transitionDurationMS.value = delay
   endGameTimer.value = useTimeout(() => {
-    console.log('GAME OVER: ENEMY HIT THE BOTTOM')
     broadcast(EventType.LevelLost, {trackId: props.trackIndex})
   }, delay)
   isMoving.value = true
