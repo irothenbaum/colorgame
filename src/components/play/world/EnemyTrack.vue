@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref, computed, watch} from 'vue'
+import type {CSSProperties} from 'vue'
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
 import {useGameStore} from '@/stores/gameStore.ts'
 import type {EnemyState} from '@/types/gameTypes.ts'
 import {EnemyType, PlayState} from '@/types/gameTypes.ts'
-import {VERTICAL_UNITS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment.ts'
-import {useTimeout, type TimerHandle} from '@/composables/useInterval.ts'
-import type {CSSProperties} from 'vue'
+import {DAMAGE_FLASH_DURATION_MS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, VERTICAL_UNITS} from '@/constants/environment.ts'
+import {type TimerHandle, useTimeout} from '@/composables/useInterval.ts'
 import {storeToRefs} from 'pinia'
 import Enemy from './Enemy.vue'
 import Confetti from './Confetti.vue'
-import {useEvents, EventType} from '@/composables/useEvents.ts'
 import type {EventPayload} from '@/composables/useEvents.ts'
+import {EventType, useEvents} from '@/composables/useEvents.ts'
 import {getValueFromColor} from '@/helpers/colorUtils.ts'
 import {usePlayerStore} from '@/stores/playerStore.ts'
 
@@ -24,7 +24,7 @@ const props = withDefaults(
   },
 )
 
-const {broadcast} = useEvents()
+const {on, broadcast} = useEvents()
 const gameStore = useGameStore()
 const playerStore = usePlayerStore()
 const {levelState, currentLevel} = storeToRefs(gameStore)
@@ -76,8 +76,6 @@ function pauseAndResume(newPosition: number, pauseMs: number) {
   })
 }
 
-const {on} = useEvents()
-
 on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   if (payload.track !== props.trackIndex || !payload.struckEnemyId) return
 
@@ -87,9 +85,21 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   pauseAndResume(Math.max(0, currentVisualPosition() - amountStruck), DAMAGE_FLASH_DURATION_MS)
 })
 
+function handleEndGame() {
+  enemyTipPosition.value = currentVisualPosition()
+  endGameTimer.value?.cancel()
+  endGameTimer.value = null
+  resumeTimer.value?.cancel()
+  resumeTimer.value = null
+  isMoving.value = false
+}
+
+on(EventType.LevelLost, handleEndGame)
+on(EventType.LevelWon, handleEndGame)
+
 watch(
   () => spawnedEnemies.value[spawnedEnemies.value.length - 1],
-  (leadEnemy) => {
+  leadEnemy => {
     if (leadEnemy?.type === EnemyType.Spacer) {
       const position = Math.max(0, currentVisualPosition() - getValueFromColor(leadEnemy.healthRemaining))
       levelState.value!.killedEnemyIds.push(leadEnemy.id)
@@ -100,7 +110,7 @@ watch(
 
 watch(
   () => levelState.value?.playState,
-  (playState) => {
+  playState => {
     if (playState === PlayState.Paused) {
       enemyTipPosition.value = currentVisualPosition()
       endGameTimer.value?.cancel()
@@ -131,7 +141,7 @@ const styles = computed<CSSProperties>(() => {
     }
   } else {
     return {
-      transform: `translateY(${100 * enemyTipPosition.value / VERTICAL_UNITS}cqh)`,
+      transform: `translateY(${(100 * enemyTipPosition.value) / VERTICAL_UNITS}cqh)`,
       transitionDuration: `0s`,
     }
   }
@@ -139,7 +149,7 @@ const styles = computed<CSSProperties>(() => {
 </script>
 
 <template>
-  <div class="enemy-track" :class="{selected: trackIndex === activeTrack}" >
+  <div class="enemy-track" :class="{selected: trackIndex === activeTrack}">
     <div class="enemies-container" :class="{moving: isMoving}" :style="styles">
       <Enemy v-for="e in spawnedEnemies" v-bind:key="e.id" :enemy="e" />
     </div>

@@ -3,6 +3,8 @@ import {watch} from 'vue'
 import {useGameStore} from '@/stores/gameStore'
 import {storeToRefs} from 'pinia'
 import EnemyTrack from '@/components/play/world/EnemyTrack.vue'
+import Results from '@/components/play/Results.vue'
+import {PlayState} from '@/types/gameTypes.ts'
 
 const gameStore = useGameStore()
 const {currentLevel, levelState} = storeToRefs(gameStore)
@@ -11,6 +13,7 @@ const {currentLevel, levelState} = storeToRefs(gameStore)
 <template>
   <div class="world">
     <EnemyTrack v-for="i in currentLevel!.tracks" :key="i" :track-index="i - 1" />
+    <Results v-if="levelState?.playState === PlayState.Won || levelState?.playState === PlayState.Lost" />
   </div>
 </template>
 

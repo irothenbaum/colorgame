@@ -10,7 +10,6 @@ export enum PlayState {
 export enum Scene {
   MENU = 'menu',
   PLAY = 'play',
-  RESULTS = 'results',
 }
 
 export enum EnemyType {

@@ -36,7 +36,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     if (ids.length === Object.keys(levelState.value!.enemiesLookup).length) {
       levelState.value!.playState = PlayState.Won
     }
-  })
+  }, {deep: true})
 
   on(EventType.LevelLost, () => {
     levelState.value!.playState = PlayState.Lost
