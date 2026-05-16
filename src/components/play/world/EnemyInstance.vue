@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {computed, ref, watchEffect} from 'vue'
 import type {EnemyState} from '@/types/gameTypes.ts'
-import {EnemyType} from '@/types/gameTypes.ts'
 import {colorHealthToColor, getValueFromColor} from '@/helpers/colorUtils.ts'
 import {VERTICAL_UNITS, DAMAGE_FLASH_DURATION_MS, ENEMY_SHRINK_DURATION_MS} from '@/constants/environment.ts'
 import {type EventPayload, EventType, useEvents} from '@/composables/useEvents.ts'
@@ -21,7 +20,7 @@ watchEffect(() => {
 const isFlashing = ref(false)
 const isDestroyed = ref(false)
 const visualHeightCQH = ref<number | null>(null)
-const displayHeightCQH = computed(() => visualHeightCQH.value ?? healthValue.value * 100 / VERTICAL_UNITS)
+const displayHeightCQH = computed(() => visualHeightCQH.value ?? (healthValue.value * 100) / VERTICAL_UNITS)
 
 const {on, broadcast} = useEvents()
 
@@ -29,9 +28,9 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   if (payload.struckEnemyId !== props.enemy.id) return
   if (getValueFromColor(payload.damageDone!) === 0) return
 
-  const targetHeightCQH = payload.debris ? getValueFromColor(payload.debris) * 100 / VERTICAL_UNITS : 0
+  const targetHeightCQH = payload.debris ? (getValueFromColor(payload.debris) * 100) / VERTICAL_UNITS : 0
 
-  visualHeightCQH.value = healthValue.value * 100 / VERTICAL_UNITS
+  visualHeightCQH.value = (healthValue.value * 100) / VERTICAL_UNITS
   isFlashing.value = true
 
   requestAnimationFrame(() => {
@@ -46,6 +45,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   useTimeout(() => {
     visualHeightCQH.value = null
     if (!payload.debris) {
+      console.log('Enemy hit complete', payload.debris, props.enemy)
       broadcast(EventType.EnemyDestroyed, {enemyId: props.enemy.id})
     }
   }, DAMAGE_FLASH_DURATION_MS + ENEMY_SHRINK_DURATION_MS)
@@ -54,7 +54,11 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 
 <template>
   <div class="enemy-container" :class="{[enemy.type]: true}" :style="{height: displayHeightCQH + 'cqh'}">
-    <div class="enemy" :class="{flashing: isFlashing}" :style="{backgroundColor: displayColor, height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}">
+    <div
+      class="enemy"
+      :class="{flashing: isFlashing}"
+      :style="{backgroundColor: displayColor, height: displayHeightCQH + 'cqh', padding: isDestroyed ? '0' : ''}"
+    >
       <span v-for="i in healthValue" :key="i" />
     </div>
   </div>
@@ -64,8 +68,13 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 @use '../../../styles';
 
 @keyframes damage-flash {
-  0%, 100% { opacity: 0; }
-  50%       { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .enemy-container {
@@ -82,8 +91,9 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   width: 100%;
   height: 100%;
   bottom: 0;
-  transition: height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
-              padding v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;
+  transition:
+    height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
+    padding v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;
   @include styles.flex-row(var(--space-xs));
   justify-content: space-evenly;
   padding: var(--space-xs);
@@ -104,7 +114,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
     position: absolute;
     inset: 0;
     background-color: white;
-    animation: damage-flash v-bind('(DAMAGE_FLASH_DURATION_MS / 4) + "ms"') steps(2, end) 4 forwards;
+    animation: damage-flash v-bind('(DAMAGE_FLASH_DURATION_MS / 3) + "ms"') steps(2, end) 3 forwards;
     pointer-events: none;
     z-index: 3;
   }

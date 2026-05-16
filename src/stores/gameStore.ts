@@ -7,7 +7,7 @@ import { usePlayerStore } from '@/stores/playerStore.ts'
 import {instantiateEnemies} from '@/helpers/gameUtils.ts'
 import type {ColorValue} from '@/types/colorTypes.ts'
 import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
-import {EventType, useEvents, type EventPayload} from '@/composables/useEvents.ts'
+import {EventType, listen, broadcast, type EventPayload} from '@/composables/useEvents.ts'
 import {useHighScoresStore} from '@/stores/highScoresStore.ts'
 
 
@@ -23,13 +23,11 @@ export const useGameStore = defineStore('game', (): GameStore => {
   const currentLevel = ref<GameState['currentLevel']>(undefined)
   const levelState = ref<GameState['levelState']>(undefined)
   const levelsCompleted = computed<GameState['levelsCompleted']>(() => results.value.length)
-  const {broadcast, on} = useEvents()
-
-  on(EventType.LevelLost, () => {
+  listen(EventType.LevelLost, () => {
     recordCurrentLevelAsResult(PlayState.Lost)
   })
 
-  on(EventType.LevelWon, () => {
+  listen(EventType.LevelWon, () => {
     recordCurrentLevelAsResult(PlayState.Won)
   })
 
@@ -68,7 +66,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     console.log("TOGGLING PAUSE " + nowPaused)
     levelState.value.playState = nowPaused ? PlayState.Paused : PlayState.Playing
   }
-  on(EventType.EnemyDestroyed, (payload: EventPayload[EventType.EnemyDestroyed]) => {
+  listen(EventType.EnemyDestroyed, (payload: EventPayload[EventType.EnemyDestroyed]) => {
     console.log("ENEMY DESTROYED " + payload.enemyId)
     if (!levelState.value) {
       return

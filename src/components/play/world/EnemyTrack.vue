@@ -7,8 +7,8 @@ import {EnemyType, PlayState} from '@/types/gameTypes.ts'
 import {DAMAGE_FLASH_DURATION_MS, DEFAULT_TIME_TO_REACH_BOTTOM_MS, VERTICAL_UNITS} from '@/constants/environment.ts'
 import {type TimerHandle, useTimeout} from '@/composables/useInterval.ts'
 import {storeToRefs} from 'pinia'
-import Enemy from './Enemy.vue'
-import Confetti from './Confetti.vue'
+import Enemy from '@/components/play/world/EnemyInstance.vue'
+import RenderConfetti from '@/components/play/world/RenderConfetti.vue'
 import type {EventPayload} from '@/composables/useEvents.ts'
 import {EventType, useEvents} from '@/composables/useEvents.ts'
 import {getValueFromColor} from '@/helpers/colorUtils.ts'
@@ -152,7 +152,7 @@ const styles = computed<CSSProperties>(() => {
     <div class="enemies-container" :class="{moving: isMoving}" :style="styles">
       <Enemy v-for="e in spawnedEnemies" v-bind:key="e.id" :enemy="e" />
     </div>
-    <Confetti v-if="spawnedEnemies.length === 0" :count-scale="currentLevel!.tracks" />
+    <RenderConfetti v-if="spawnedEnemies.length === 0" :count-scale="currentLevel!.tracks" />
   </div>
 </template>
 

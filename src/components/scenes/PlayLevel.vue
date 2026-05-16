@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, watch} from 'vue'
 import PlayControls from '@/components/play/controls/PlayControls.vue'
-import World from '@/components/play/world/World.vue'
+import LevelWorld from '@/components/play/world/LevelWorld.vue'
 import {storeToRefs} from 'pinia'
 import {useGameStore} from '@/stores/gameStore.ts'
 import {useEvents, EventType} from '@/composables/useEvents.ts'
@@ -17,6 +17,7 @@ const {broadcast} = useEvents()
 watch(
   () => levelState.value?.killedEnemyIds,
   ids => {
+    console.log('Killed enemies:', ids)
     if (!ids || ids.length === 0) {
       return
     }
@@ -65,7 +66,7 @@ onUnmounted(() => {
     @replay="handlePlay(currentLevel as LevelDefinition)"
   />
   <div class="play-level">
-    <World />
+    <LevelWorld />
     <PlayControls />
   </div>
 </template>

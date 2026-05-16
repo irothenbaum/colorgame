@@ -9,6 +9,7 @@ export interface MenuStore extends Reactive<MenuState> {
 
 export const useMenuStore = defineStore('menu', (): MenuStore => {
   const scene = ref<Scene>(Scene.SCENE_SELECT)
+  const sceneSelectScrollTop = ref<number | null>(null)
 
   function goToScene(newScene: Scene) {
     console.log(`Going to scene: ${newScene}, ${scene.value}`)
@@ -20,6 +21,7 @@ export const useMenuStore = defineStore('menu', (): MenuStore => {
 
   return {
     scene,
+    sceneSelectScrollTop,
     goToScene,
   }
 })

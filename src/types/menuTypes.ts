@@ -8,4 +8,5 @@ export enum Scene {
 
 export interface MenuState {
   scene: Scene
+  sceneSelectScrollTop: number | null
 }
