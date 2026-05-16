@@ -8,7 +8,10 @@ import {useEvents, EventType} from '@/composables/useEvents.ts'
 import {type LevelDefinition, PlayState} from '@/types/gameTypes.ts'
 import LevelResults from '@/components/play/LevelResults.vue'
 import PauseModal from '@/components/play/PauseModal.vue'
+import {useMenuStore} from '@/stores/menuStore.ts'
+import {Scene} from '@/types/menuTypes.ts'
 
+const menuStore = useMenuStore()
 const gameStore = useGameStore()
 const {levelState, currentLevel} = storeToRefs(gameStore)
 
@@ -17,14 +20,13 @@ const {broadcast} = useEvents()
 watch(
   () => levelState.value?.killedEnemyIds,
   ids => {
-    console.log('Killed enemies:', ids)
     if (!ids || ids.length === 0) {
       return
     }
     // if we've killed as many enemies as we have spawned, the level must be over
     if (ids.length === Object.keys(levelState.value!.enemiesLookup).length) {
       // indicate what track the last enemy was on, so we can trigger the right win animation
-      broadcast(EventType.LevelWon, levelState.value!.enemiesLookup[ids[ids.length - 1]].track)
+      broadcast(EventType.LevelWon, {trackId: levelState.value!.enemiesLookup[ids[ids.length - 1]].track})
     }
   },
   {deep: true},
@@ -32,6 +34,11 @@ watch(
 
 function handlePlay(level: LevelDefinition) {
   gameStore.startLevel(level)
+}
+
+function handleBackToSelect() {
+  gameStore.endLevel()
+  menuStore.goToScene(Scene.SCENE_SELECT)
 }
 
 function onPopState() {
@@ -62,7 +69,7 @@ onUnmounted(() => {
   <PauseModal v-if="levelState?.playState === PlayState.Paused" />
   <LevelResults
     v-if="levelState?.playState === PlayState.Won || levelState?.playState === PlayState.Lost"
-    @back="gameStore.endLevel()"
+    @back="handleBackToSelect"
     @replay="handlePlay(currentLevel as LevelDefinition)"
   />
   <div class="play-level">

@@ -45,7 +45,6 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   useTimeout(() => {
     visualHeightCQH.value = null
     if (!payload.debris) {
-      console.log('Enemy hit complete', payload.debris, props.enemy)
       broadcast(EventType.EnemyDestroyed, {enemyId: props.enemy.id})
     }
   }, DAMAGE_FLASH_DURATION_MS + ENEMY_SHRINK_DURATION_MS)

@@ -16,7 +16,7 @@ const shotsFired = computed(() => lastResult.value?.shotsFired ?? 0)
 const totalWaste = computed(() => lastResult.value?.totalWaste ?? 0)
 const totalEnemies = computed(() => lastResult.value?.totalEnemies ?? 0)
 
-const scorePercent = computed(() => {
+const scorePercent = computed<number>(() => {
   const denominator = shotsFired.value + totalWaste.value
   if (denominator === 0) return 100
   return Math.min(100, (totalEnemies.value / denominator) * 100)
@@ -58,12 +58,8 @@ const displayedWaste = ref(0)
 const displayedScore = ref(0)
 const gradeVisible = ref(false)
 
-const scoreDisplay = computed(() => {
-  const val = displayedScore.value
-  if (val >= scorePercent.value) {
-    return (scorePercent.value === 100 ? '100' : scorePercent.value.toFixed(1)) + '%'
-  }
-  return val.toFixed(1).replace(/\.0$/, '') + '%'
+const scoreDisplay = computed<string>(() => {
+  return `${Math.floor(Math.min(displayedScore.value, scorePercent.value))}%`
 })
 
 function animateCount(to: number, duration: number, onUpdate: (val: number) => void): Promise<void> {
@@ -89,7 +85,8 @@ function delay(ms: number): Promise<void> {
 }
 
 onMounted(async () => {
-  await delay(400)
+  // 1000ms initial pause (matches bg-fade-in animation-delay) + 400ms for bg to finish fading in
+  await delay(1400)
   contentVisible.value = true
 
   // wait for slide-up transition to settle
@@ -115,27 +112,29 @@ onMounted(async () => {
 
 <template>
   <div class="results-content">
-    <div class="main-content" :class="{ visible: contentVisible }">
+    <div class="main-content" :class="{visible: contentVisible}">
       <h1>Results</h1>
 
       <div class="stats">
         <div class="stat-row">
           <span class="stat-label">Enemies</span>
-          <span class="stat-value" :class="{ pending: !enemiesStarted }">{{ enemiesStarted ? displayedEnemies : '-' }}</span>
+          <span class="stat-value" :class="{pending: !enemiesStarted}">{{
+            enemiesStarted ? displayedEnemies : '-'
+          }}</span>
         </div>
         <div class="stat-row">
           <span class="stat-label">Shots Fired</span>
-          <span class="stat-value" :class="{ pending: !shotsStarted }">{{ shotsStarted ? displayedShots : '-' }}</span>
+          <span class="stat-value" :class="{pending: !shotsStarted}">{{ shotsStarted ? displayedShots : '-' }}</span>
         </div>
         <div class="stat-row">
           <span class="stat-label">Wasted</span>
-          <span class="stat-value" :class="{ pending: !wasteStarted }">{{ wasteStarted ? displayedWaste : '-' }}</span>
+          <span class="stat-value" :class="{pending: !wasteStarted}">{{ wasteStarted ? displayedWaste : '-' }}</span>
         </div>
       </div>
 
       <div class="score">
         <div class="score-percent">{{ scoreDisplay }}</div>
-        <div class="score-grade" :class="[gradeClass, { 'grade-visible': gradeVisible }]">{{ letterGrade }}</div>
+        <div class="score-grade" :class="[gradeClass, {'grade-visible': gradeVisible}]">{{ letterGrade }}</div>
       </div>
     </div>
   </div>
@@ -167,7 +166,9 @@ onMounted(async () => {
     width: 100%;
     opacity: 0;
     transform: translateY(var(--space-xxl));
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
 
     &.visible {
       opacity: 1;

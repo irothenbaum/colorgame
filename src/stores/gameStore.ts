@@ -63,11 +63,9 @@ export const useGameStore = defineStore('game', (): GameStore => {
       nowPaused = levelState.value.playState === PlayState.Playing
     }
 
-    console.log("TOGGLING PAUSE " + nowPaused)
     levelState.value.playState = nowPaused ? PlayState.Paused : PlayState.Playing
   }
   listen(EventType.EnemyDestroyed, (payload: EventPayload[EventType.EnemyDestroyed]) => {
-    console.log("ENEMY DESTROYED " + payload.enemyId)
     if (!levelState.value) {
       return
     }
@@ -85,6 +83,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     // Clear current level and world state
     currentLevel.value = undefined
     levelState.value = undefined
+
   }
 
   function startLevel(level: LevelDefinition) {

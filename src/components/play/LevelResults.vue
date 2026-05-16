@@ -12,7 +12,6 @@ const controlsVisible = ref(false)
 
 function onGradeShown() {
   controlsVisible.value = true
-  console.log("Test")
 }
 </script>
 
@@ -41,7 +40,7 @@ function onGradeShown() {
 .level-results {
   position: absolute;
   background: rgba(255, 255, 255, 0.92);
-  animation: bg-fade-in 0.5s ease-out both;
+  animation: bg-fade-in 0.5s 1s ease-out both;
   top: 0;
   left: 0;
   @include styles.flex-column(0);

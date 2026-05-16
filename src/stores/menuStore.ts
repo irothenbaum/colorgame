@@ -12,7 +12,6 @@ export const useMenuStore = defineStore('menu', (): MenuStore => {
   const sceneSelectScrollTop = ref<number | null>(null)
 
   function goToScene(newScene: Scene) {
-    console.log(`Going to scene: ${newScene}, ${scene.value}`)
     if (scene.value === newScene) {
       return
     }
