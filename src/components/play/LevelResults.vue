@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {ref} from 'vue'
 import ResultsContent from './results/ResultsContent.vue'
 import Button from '@/components/utility/Button.vue'
 
@@ -6,12 +7,20 @@ const emit = defineEmits<{
   (e: 'back'): void
   (e: 'replay'): void
 }>()
+
+const controlsVisible = ref(false)
+
+function onGradeShown() {
+  setTimeout(() => {
+    controlsVisible.value = true
+  }, 1000)
+}
 </script>
 
 <template>
   <div class="level-results">
-    <ResultsContent />
-    <div class="controls">
+    <ResultsContent @grade-shown="onGradeShown" />
+    <div class="controls" :class="{ visible: controlsVisible }">
       <Button @click="emit('replay')" label="Play again" />
       <Button @click="emit('back')" label="Back" />
     </div>
@@ -21,9 +30,19 @@ const emit = defineEmits<{
 <style scoped lang="scss">
 @use '../../styles';
 
+@keyframes bg-fade-in {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.75);
+  }
+}
+
 .level-results {
   position: absolute;
   background: rgba(0, 0, 0, 0.75);
+  animation: bg-fade-in 0.5s ease-out both;
   top: 0;
   left: 0;
   @include styles.flex-column(0);
@@ -34,18 +53,22 @@ const emit = defineEmits<{
   z-index: 20;
 
   .results-content {
-    // height: 100%;
-    // flex 1;
     width: 100%;
   }
 
   .controls {
     width: 100%;
-    //background: var(--color-controls-bg);
-    //height: var(--controls-height);
     padding: var(--space-lg);
     @include styles.flex-row(var(--space-xxl));
     justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-out;
+
+    &.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     button {
       font-size: var(--font-size-xxl);
