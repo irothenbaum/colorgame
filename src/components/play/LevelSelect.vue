@@ -2,19 +2,21 @@
 import type {LevelDefinition} from '@/types/gameTypes.ts'
 import {loadAllLevels} from '@/helpers/levelUtils.ts'
 import LevelCard from './select/LevelCard.vue'
+import {useHighScoresStore} from '@/stores/highScoresStore.ts'
 
 const emit = defineEmits<{
   play: [level: LevelDefinition]
 }>()
 
 const levels: LevelDefinition[] = loadAllLevels()
+const highScoresStore = useHighScoresStore()
 </script>
 
 <template>
   <div class="select-level">
     <ul class="levels-container">
       <li v-for="l in levels" v-bind:key="l.id">
-        <LevelCard :level="l" @play="emit('play', l)" />
+        <LevelCard :level="l" :high-score="highScoresStore.getLevelScores(l.id)" @play="emit('play', l)" />
       </li>
     </ul>
   </div>

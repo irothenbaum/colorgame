@@ -8,6 +8,7 @@ import {instantiateEnemies} from '@/helpers/gameUtils.ts'
 import type {ColorValue} from '@/types/colorTypes.ts'
 import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
 import {EventType, useEvents, type EventPayload} from '@/composables/useEvents.ts'
+import {useHighScoresStore} from '@/stores/highScoresStore.ts'
 
 
 export interface GameStore extends Reactive<GameState> {
@@ -44,18 +45,17 @@ export const useGameStore = defineStore('game', (): GameStore => {
     levelState.value!.playState = state
 
     // Save result
-    results.value = [
-      ...results.value,
-      {
-        levelId: currentLevel.value.id,
-        score: levelState.value.score,
-        maxCombo: levelState.value.maxCombo,
-        killedEnemyIds: levelState.value.killedEnemyIds,
-        shotsFired: levelState.value.shotsFired,
-        totalWaste: levelState.value.totalWaste,
-        totalEnemies: levelState.value.totalEnemies,
-      },
-    ]
+    const newResult = {
+      levelId: currentLevel.value.id,
+      score: levelState.value.score,
+      maxCombo: levelState.value.maxCombo,
+      killedEnemyIds: levelState.value.killedEnemyIds,
+      shotsFired: levelState.value.shotsFired,
+      totalWaste: levelState.value.totalWaste,
+      totalEnemies: levelState.value.totalEnemies,
+    }
+    results.value = [...results.value, newResult]
+    highScoresStore.recordResult(newResult)
   }
 
   function togglePause(nowPaused?:boolean) {
@@ -80,6 +80,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
   }) // to trigger reactivity in tests when we call fireShot and update levelState.enemiesLookup
 
   const playerStore = usePlayerStore()
+  const highScoresStore = useHighScoresStore()
 
   function startGame() {
     // TODO: Should this take GameSettings as input?

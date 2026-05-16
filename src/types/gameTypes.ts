@@ -73,3 +73,21 @@ export interface GameState {
   currentLevel: LevelDefinition | undefined
   levelState: LevelState | undefined
 }
+
+// Per-level entry stored in localStorage
+export interface LevelHighScore {
+  allTimeBest: number   // best score % ever
+  results: number[]     // score percentages played today
+  resultsDate: string   // YYYY-MM-DD — resets results when date changes
+}
+
+// Full persisted blob
+export interface HighScoresData {
+  levels: Record<string, LevelHighScore>
+}
+
+// View type passed to UI components
+export interface LevelScoreView {
+  allTimeBest: number | null  // null if never played
+  todayBest: number | null  // null if not played today
+}
