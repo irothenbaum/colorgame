@@ -4,8 +4,12 @@ import type {HighScoresData, LevelResult, LevelScoreView} from '@/types/gameType
 import {STORAGE_KEY} from '@/constants/environment.ts'
 
 
-function todayString(): string {
-  return new Date().toISOString().slice(0, 10)
+function now(): string {
+  return new Date().toISOString()
+}
+
+function isSameCalendarDay(isoA: string, isoB: string): boolean {
+  return isoA.slice(0, 10) === isoB.slice(0, 10)
 }
 
 function computeScorePercent(result: Pick<LevelResult, 'totalEnemies' | 'shotsFired' | 'totalWaste'>): number {
@@ -30,28 +34,27 @@ export const useHighScoresStore = defineStore('highScores', () => {
   }, {deep: true})
 
   function recordResult(result: LevelResult) {
-    const today = todayString()
-    const scorePercent = computeScorePercent(result)
+    const score = computeScorePercent(result)
     const existing = data.value.levels[result.levelId]
-    const isSameDay = existing?.resultsDate === today
+    const lastPlay = {score, date: now()}
 
-    data.value.levels[result.levelId] = {
-      allTimeBest: Math.max(existing?.allTimeBest ?? 0, scorePercent),
-      results: [...(isSameDay ? existing.results : []), scorePercent],
-      resultsDate: today,
-    }
+    const prevBest = existing?.allTimeBest.score ?? 0
+    const allTimeBest = !existing || score > prevBest ? lastPlay : existing.allTimeBest
+
+    const isSameDay = !!existing && isSameCalendarDay(existing.todayBest.date, lastPlay.date)
+    const prevTodayBest = isSameDay ? existing!.todayBest.score : 0
+    const todayBest = !isSameDay || score > prevTodayBest ? lastPlay : existing!.todayBest
+
+    data.value.levels[result.levelId] = {allTimeBest, todayBest, lastPlay}
   }
 
   function getLevelScores(levelId: string): LevelScoreView | null {
     const entry = data.value.levels[levelId]
     if (!entry) return null
 
-    const isSameDay = entry.resultsDate === todayString()
-    const todayResults = isSameDay ? entry.results : []
-
     return {
-      allTimeBest: entry.allTimeBest,
-      todayBest: todayResults.length > 0 ? Math.max(...todayResults) : null,
+      allTimeBest: entry.allTimeBest.score,
+      todayBest: isSameCalendarDay(entry.todayBest.date, now()) ? entry.todayBest.score : null,
     }
   }
 

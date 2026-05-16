@@ -9,8 +9,7 @@ const {currentLevel} = storeToRefs(gameStore)
 
 <template>
   <div class="menu">
-    <h1>Main Menu</h1>
-    <Button @click="gameStore.startGame()" />
+    <h1>Landing card</h1>
   </div>
 </template>
 

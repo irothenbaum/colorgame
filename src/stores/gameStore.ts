@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import {ref, computed, watch} from 'vue'
-import {PlayState, Scene, EnemyType} from '@/types/gameTypes.ts'
+import {PlayState, EnemyType} from '@/types/gameTypes.ts'
 import type {GameState, LevelDefinition, FireResult} from '@/types/gameTypes.ts'
 import type { Reactive, } from '@/types/utilityTypes.ts'
 import { usePlayerStore } from '@/stores/playerStore.ts'
@@ -13,15 +13,12 @@ import {useHighScoresStore} from '@/stores/highScoresStore.ts'
 
 export interface GameStore extends Reactive<GameState> {
   startLevel: (level: LevelDefinition) => void
-  startGame: () => void
-  endGame: () => void
   endLevel: () => void
   fireShot: (track: number, color: ColorValue) => FireResult
   togglePause: (nowPaused?: boolean) => void
 }
 
 export const useGameStore = defineStore('game', (): GameStore => {
-  const scene = ref<Scene>(Scene.MENU)
   const results = ref<GameState['results']>([])
   const currentLevel = ref<GameState['currentLevel']>(undefined)
   const levelState = ref<GameState['levelState']>(undefined)
@@ -81,15 +78,6 @@ export const useGameStore = defineStore('game', (): GameStore => {
 
   const playerStore = usePlayerStore()
   const highScoresStore = useHighScoresStore()
-
-  function startGame() {
-    // TODO: Should this take GameSettings as input?
-    // reset props
-    scene.value = Scene.PLAY
-    results.value = []
-    currentLevel.value = undefined
-    levelState.value = undefined
-  }
 
   function endLevel() {
     if (!currentLevel.value || !levelState.value) {
@@ -178,13 +166,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     return retVal
   }
 
-  function endGame() {
-    console.log("END GAME")
-    scene.value = Scene.MENU
-  }
-
   return {
-    scene,
     results,
     levelsCompleted,
     currentLevel,
@@ -193,9 +175,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     // actions
     startLevel,
     fireShot,
-    startGame,
     endLevel,
-    endGame,
     togglePause
   }
 })

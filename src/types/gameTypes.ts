@@ -7,11 +7,6 @@ export enum PlayState {
   Lost = 'lost'
 }
 
-export enum Scene {
-  MENU = 'menu',
-  PLAY = 'play',
-}
-
 export enum EnemyType {
   Pixel = 'pixel',
   Spacer = 'spacer',
@@ -66,7 +61,6 @@ export interface LevelState extends LevelResult {
 
 export interface GameState {
   results: Array<LevelResult>
-  scene: Scene
   levelsCompleted: number // the count of results
 
   // these are all undefined if we're not in a level
@@ -74,11 +68,16 @@ export interface GameState {
   levelState: LevelState | undefined
 }
 
+export interface ScoreEntry {
+  score: number
+  date: string  // ISO 8601 timestamp
+}
+
 // Per-level entry stored in localStorage
 export interface LevelHighScore {
-  allTimeBest: number   // best score % ever
-  results: number[]     // score percentages played today
-  resultsDate: string   // YYYY-MM-DD — resets results when date changes
+  allTimeBest: ScoreEntry
+  todayBest: ScoreEntry
+  lastPlay: ScoreEntry
 }
 
 // Full persisted blob
