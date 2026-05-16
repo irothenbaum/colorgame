@@ -85,12 +85,12 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 })
 
 function handleEndGame() {
-  enemyTipPosition.value = currentVisualPosition()
   endGameTimer.value?.cancel()
   endGameTimer.value = null
   resumeTimer.value?.cancel()
   resumeTimer.value = null
   isMoving.value = false
+  enemyTipPosition.value = 0
 }
 
 on(EventType.LevelLost, handleEndGame)

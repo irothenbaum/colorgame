@@ -11,16 +11,15 @@ const emit = defineEmits<{
 const controlsVisible = ref(false)
 
 function onGradeShown() {
-  setTimeout(() => {
-    controlsVisible.value = true
-  }, 1000)
+  controlsVisible.value = true
+  console.log("Test")
 }
 </script>
 
 <template>
   <div class="level-results">
     <ResultsContent @grade-shown="onGradeShown" />
-    <div class="controls" :class="{ visible: controlsVisible }">
+    <div class="controls" :class="{visible: controlsVisible}">
       <Button @click="emit('replay')" label="Play again" />
       <Button @click="emit('back')" label="Back" />
     </div>
@@ -32,16 +31,16 @@ function onGradeShown() {
 
 @keyframes bg-fade-in {
   from {
-    background: rgba(0, 0, 0, 0);
+    background: rgba(255, 255, 255, 0);
   }
   to {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(255, 255, 255, 0.92);
   }
 }
 
 .level-results {
   position: absolute;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(255, 255, 255, 0.92);
   animation: bg-fade-in 0.5s ease-out both;
   top: 0;
   left: 0;

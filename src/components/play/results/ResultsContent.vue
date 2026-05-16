@@ -49,6 +49,9 @@ const gradeClass = computed(() => {
 })
 
 const contentVisible = ref(false)
+const enemiesStarted = ref(false)
+const shotsStarted = ref(false)
+const wasteStarted = ref(false)
 const displayedEnemies = ref(0)
 const displayedShots = ref(0)
 const displayedWaste = ref(0)
@@ -92,10 +95,13 @@ onMounted(async () => {
   // wait for slide-up transition to settle
   await delay(600)
 
+  enemiesStarted.value = true
   await animateCount(totalEnemies.value, 800, v => (displayedEnemies.value = Math.round(v)))
   await delay(500)
+  shotsStarted.value = true
   await animateCount(shotsFired.value, 800, v => (displayedShots.value = Math.round(v)))
   await delay(500)
+  wasteStarted.value = true
   await animateCount(totalWaste.value, 800, v => (displayedWaste.value = Math.round(v)))
 
   await delay(500)
@@ -115,15 +121,15 @@ onMounted(async () => {
       <div class="stats">
         <div class="stat-row">
           <span class="stat-label">Enemies</span>
-          <span class="stat-value">{{ displayedEnemies }}</span>
+          <span class="stat-value" :class="{ pending: !enemiesStarted }">{{ enemiesStarted ? displayedEnemies : '-' }}</span>
         </div>
         <div class="stat-row">
           <span class="stat-label">Shots Fired</span>
-          <span class="stat-value">{{ displayedShots }}</span>
+          <span class="stat-value" :class="{ pending: !shotsStarted }">{{ shotsStarted ? displayedShots : '-' }}</span>
         </div>
         <div class="stat-row">
           <span class="stat-label">Wasted</span>
-          <span class="stat-value">{{ displayedWaste }}</span>
+          <span class="stat-value" :class="{ pending: !wasteStarted }">{{ wasteStarted ? displayedWaste : '-' }}</span>
         </div>
       </div>
 
@@ -153,7 +159,7 @@ onMounted(async () => {
   @include styles.flex-column();
   justify-content: center;
   z-index: 100;
-  color: var(--color-text-inverse);
+  color: var(--color-text);
   padding: var(--space-lg);
 
   .main-content {
@@ -185,7 +191,7 @@ onMounted(async () => {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    border-bottom: 1px solid var(--color-light-grey);
+    border-bottom: 1px solid var(--color-grey);
     padding-bottom: var(--space-xs);
 
     .stat-label {
@@ -197,6 +203,10 @@ onMounted(async () => {
     .stat-value {
       font-size: var(--font-size-xl);
       font-weight: bold;
+
+      &.pending {
+        opacity: 0.3;
+      }
     }
   }
 
