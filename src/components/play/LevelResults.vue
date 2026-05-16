@@ -49,6 +49,10 @@ const emit = defineEmits<{
 
     button {
       font-size: var(--font-size-xxl);
+
+      @include styles.small-and-below() {
+        font-size: var(--font-size-lg);
+      }
     }
   }
 }
