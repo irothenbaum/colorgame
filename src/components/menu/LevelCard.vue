@@ -2,7 +2,7 @@
 import {computed} from 'vue'
 import type {LevelDefinition, LevelScoreView} from '@/types/gameTypes.ts'
 import {ContrastColor, darkenColor, getContrastColor} from '@/helpers/colorUtils.ts'
-import {TIMER, STAR, CHECK} from '@/constants/icons.ts'
+import {STAR, CHECK, TROPHY, CALENDAR} from '@/constants/icons.ts'
 import {useGameStore} from '@/stores/gameStore.ts'
 import {useMenuStore} from '@/stores/menuStore.ts'
 import {Scene} from '@/types/menuTypes.ts'
@@ -45,9 +45,9 @@ function handlePlay() {
     <p>{{ level.description }}</p>
 
     <div class="badges" :style="{'--badge-accent': accentColor}">
-      <i :class="['pi', TIMER, {active: playedToday}]" title="Played today" />
+      <i :class="['pi', CALENDAR, {active: playedToday}]" title="Played today" />
       <i :class="['pi', STAR, {active: todayIsHighScore}]" title="Today's high score" />
-      <i :class="['pi', CHECK, {active: isPerfect}]" title="Perfect score (100%)" />
+      <i :class="['pi', TROPHY, {active: isPerfect}]" title="Perfect score (100%)" />
     </div>
 
     <div class="scores">

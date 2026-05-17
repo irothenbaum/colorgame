@@ -7,6 +7,8 @@ export enum Scene {
 }
 
 export interface MenuState {
+  gameHasLoaded: boolean
   scene: Scene
+  sceneParams: Record<string, string|number>
   sceneSelectScrollTop: number | null
 }

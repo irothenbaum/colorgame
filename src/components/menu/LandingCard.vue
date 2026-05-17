@@ -1,3 +1,7 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
   <div class="landing-card">
     <div class="title-group">

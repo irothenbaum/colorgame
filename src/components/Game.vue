@@ -7,13 +7,23 @@ import TrainingLevel from '@/components/scenes/TrainingLevel.vue'
 import EndlessLevel from '@/components/scenes/EndlessLevel.vue'
 import TutorialLevel from '@/components/scenes/TutorialLevel.vue'
 import {storeToRefs} from 'pinia'
+import {onMounted} from 'vue'
+import {useTimeout} from '@/composables/useInterval.ts'
 
 const menuStore = useMenuStore()
-const {scene} = storeToRefs(menuStore)
+const {scene, gameHasLoaded} = storeToRefs(menuStore)
+
+onMounted(() => {
+  // Ensure the reveal overlay is removed after the animation completes
+  useTimeout(() => {
+    gameHasLoaded.value = true
+  }, 3000) // Match the duration of the reveal-fade animation (1s delay + 2s duration)
+})
 </script>
 
 <template>
   <div class="game-container">
+    <div class="reveal-overlay" v-if="!gameHasLoaded" />
     <SceneSelect v-if="scene === Scene.SCENE_SELECT" />
     <PlayLevel v-else-if="scene === Scene.PLAY_LEVEL" />
     <TrainingLevel v-else-if="scene === Scene.TRAINING" />
@@ -29,6 +39,25 @@ const {scene} = storeToRefs(menuStore)
   height: 100%;
   width: 100%;
   background: white;
+  position: relative;
+
+  @keyframes reveal-fade {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .reveal-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--color-white);
+    pointer-events: none;
+    animation: reveal-fade 2s 1s ease-in forwards;
+    z-index: 10;
+  }
 
   .scenes-container {
     padding: 10vh 0;

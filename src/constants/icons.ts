@@ -18,3 +18,5 @@ export const STAR: string = PrimeIcons.STAR_FILL
 export const CHALLENGE: string = PrimeIcons.USERS
 export const REFRESH: string = PrimeIcons.REFRESH
 export const LOCK: string = PrimeIcons.LOCK
+export const TROPHY: string = PrimeIcons.TROPHY
+export const CALENDAR: string = PrimeIcons.CALENDAR
