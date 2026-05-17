@@ -4,6 +4,7 @@ export enum Scene {
   TRAINING = 'training',
   TUTORIAL = 'tutorial',
   ENDLESS = 'endless',
+  DAILY = 'daily',
 }
 
 export interface MenuState {

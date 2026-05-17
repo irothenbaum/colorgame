@@ -9,7 +9,7 @@ const {currentLevel} = storeToRefs(gameStore)
 
 <template>
   <div class="menu">
-    <h1>Tutorial card</h1>
+    <h1>Daily Card</h1>
   </div>
 </template>
 

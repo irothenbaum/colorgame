@@ -17,10 +17,6 @@ const {currentLevel} = storeToRefs(gameStore)
 @use '../../styles';
 
 .menu {
-  @include styles.flex-column();
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-  background-color: var(--color-white);
+  @include styles.level-card();
 }
 </style>

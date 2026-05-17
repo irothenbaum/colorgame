@@ -9,7 +9,7 @@ const {currentLevel} = storeToRefs(gameStore)
 
 <template>
   <div class="menu">
-    <h1>Tutorial card</h1>
+    <h1>Daily Game</h1>
   </div>
 </template>
 
@@ -17,6 +17,10 @@ const {currentLevel} = storeToRefs(gameStore)
 @use '../../styles';
 
 .menu {
-  @include styles.level-card();
+  @include styles.flex-column();
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: var(--color-white);
 }
 </style>

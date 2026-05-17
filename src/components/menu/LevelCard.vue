@@ -72,14 +72,7 @@ function handlePlay() {
 @use '../../styles';
 
 .level-card {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  background: var(--color-white);
-  color: var(--color-text);
-  @include styles.flex-column();
-  justify-content: center;
-  overflow: hidden;
+  @include styles.level-card();
 
   .accent-bar {
     position: absolute;

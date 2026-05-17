@@ -9,6 +9,7 @@ import TutorialLevel from '@/components/scenes/TutorialLevel.vue'
 import {storeToRefs} from 'pinia'
 import {onMounted} from 'vue'
 import {useTimeout} from '@/composables/useInterval.ts'
+import DailyLevel from '@/components/scenes/DailyLevel.vue'
 
 const menuStore = useMenuStore()
 const {scene, gameHasLoaded} = storeToRefs(menuStore)
@@ -28,6 +29,7 @@ onMounted(() => {
     <PlayLevel v-else-if="scene === Scene.PLAY_LEVEL" />
     <TrainingLevel v-else-if="scene === Scene.TRAINING" />
     <EndlessLevel v-else-if="scene === Scene.ENDLESS" />
+    <DailyLevel v-else-if="scene === Scene.DAILY" />
     <TutorialLevel v-else-if="scene === Scene.TUTORIAL" />
   </div>
 </template>

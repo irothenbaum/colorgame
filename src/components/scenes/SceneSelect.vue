@@ -6,6 +6,7 @@ import {useHighScoresStore} from '@/stores/highScoresStore.ts'
 import {useMenuStore} from '@/stores/menuStore.ts'
 import LevelCard from '@/components/menu/LevelCard.vue'
 import EndlessCard from '@/components/menu/EndlessCard.vue'
+import DailyCard from '@/components/menu/DailyCard.vue'
 import TrainingCard from '@/components/menu/TrainingCard.vue'
 import LandingCard from '@/components/menu/LandingCard.vue'
 import TutorialCard from '@/components/menu/TutorialCard.vue'
@@ -45,6 +46,9 @@ onBeforeUnmount(() => {
       <EndlessCard />
     </li>
     <li>
+      <DailyCard />
+    </li>
+    <li>
       <TrainingCard />
     </li>
     <li class="landing-card-item">
@@ -79,5 +83,4 @@ onBeforeUnmount(() => {
     scroll-snap-align: center;
   }
 }
-
 </style>
