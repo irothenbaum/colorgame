@@ -1,4 +1,34 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import {ref, watch, onUnmounted} from 'vue'
+
+const props = defineProps<{
+  isActive?: boolean
+}>()
+
+const idleVisible = ref(false)
+let idleTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(
+  () => props.isActive,
+  active => {
+    if (idleTimer) {
+      clearTimeout(idleTimer)
+      idleTimer = null
+    }
+    idleVisible.value = false
+    if (active) {
+      idleTimer = setTimeout(() => {
+        idleVisible.value = true
+      }, 5000)
+    }
+  },
+  {immediate: true},
+)
+
+onUnmounted(() => {
+  if (idleTimer) clearTimeout(idleTimer)
+})
+</script>
 
 <template>
   <div class="landing-card">
@@ -9,6 +39,16 @@
         <span class="e-letter">E</span>
       </div>
       <div class="blitz-title">BLITZ</div>
+    </div>
+    <div v-if="idleVisible" class="idle-chevrons">
+      <div class="chevron-stack">
+        <i class="pi pi-chevron-down" />
+        <i class="pi pi-chevron-down" />
+      </div>
+      <div class="chevron-stack">
+        <i class="pi pi-chevron-down" />
+        <i class="pi pi-chevron-down" />
+      </div>
     </div>
   </div>
 </template>
@@ -28,8 +68,30 @@
   }
 }
 
+@keyframes chevron-hint {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  71%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
 .landing-card {
   @include styles.level-card();
+  overflow: visible;
+  z-index: 2;
 
   .title-group {
     display: flex;
@@ -96,6 +158,32 @@
       background-clip: text;
       color: transparent;
       animation: rainbow-sweep 3s ease-in-out infinite;
+    }
+  }
+
+  .idle-chevrons {
+    position: absolute;
+    bottom: -2vh;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 var(--space-xl);
+    pointer-events: none;
+    transform: translateY(50%);
+  }
+
+  .chevron-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.3;
+
+    i {
+      font-size: calc(var(--base-font-size) * 4);
+      color: var(--color-black);
+      line-height: 0.4;
+      animation: chevron-hint 1.2s ease-out infinite;
     }
   }
 }
