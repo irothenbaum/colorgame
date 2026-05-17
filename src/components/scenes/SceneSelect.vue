@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
       <TrainingCard />
     </li>
     <li class="landing-card-item" :class="liClass(3)">
-      <h4>HUE Blitz</h4>
+      <h4>Main Menu</h4>
       <LandingCard :is-active="activeLiIndex === 3" />
     </li>
     <li :class="liClass(4)">

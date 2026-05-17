@@ -26,12 +26,11 @@ export interface EnemyState extends EnemyDefinition {
 
 export interface LevelResult {
   levelId: string
-  score: number
-  maxCombo: number
   killedEnemyIds: string[] // string of enemy ids that have been killed already
   shotsFired: number
   totalWaste: number
   totalEnemies: number
+  outcome: PlayState.Won | PlayState.Lost
 }
 
 export type FireResult = {
@@ -54,7 +53,7 @@ export interface LevelDefinition {
   tracks: number
 }
 
-export interface LevelState extends LevelResult {
+export interface LevelState extends Omit<LevelResult, 'outcome'> {
   enemiesLookup: Record<string, EnemyState>
   playState: PlayState
 }

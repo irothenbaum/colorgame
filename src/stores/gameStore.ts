@@ -31,7 +31,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     recordCurrentLevelAsResult(PlayState.Won)
   })
 
-  function recordCurrentLevelAsResult(state: PlayState) {
+  function recordCurrentLevelAsResult(state: PlayState.Won | PlayState.Lost) {
     if (!currentLevel.value || !levelState.value) {
       // this will never happen
       return
@@ -42,12 +42,11 @@ export const useGameStore = defineStore('game', (): GameStore => {
     // Save result
     const newResult = {
       levelId: currentLevel.value.id,
-      score: levelState.value.score,
-      maxCombo: levelState.value.maxCombo,
       killedEnemyIds: levelState.value.killedEnemyIds,
       shotsFired: levelState.value.shotsFired,
       totalWaste: levelState.value.totalWaste,
       totalEnemies: levelState.value.totalEnemies,
+      outcome: state,
     }
     results.value = [...results.value, newResult]
     highScoresStore.recordResult(newResult)
@@ -96,8 +95,6 @@ export const useGameStore = defineStore('game', (): GameStore => {
 
     levelState.value = {
       levelId: level.id,
-      score: 0,
-      maxCombo: 0,
       killedEnemyIds: [],
       shotsFired: 0,
       totalWaste: 0,

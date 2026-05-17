@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue'
-import {useGameStore} from '@/stores/gameStore'
-import {storeToRefs} from 'pinia'
+import type {LevelResult} from '@/types/gameTypes.ts'
 
 const emit = defineEmits<{
   (e: 'grade-shown'): void
 }>()
 
-const gameStore = useGameStore()
-const {results} = storeToRefs(gameStore)
+const props = defineProps<{
+  result: LevelResult,
+}>()
 
-const lastResult = computed(() => results.value[results.value.length - 1])
-
-const shotsFired = computed(() => lastResult.value?.shotsFired ?? 0)
-const totalWaste = computed(() => lastResult.value?.totalWaste ?? 0)
-const totalEnemies = computed(() => lastResult.value?.totalEnemies ?? 0)
+const shotsFired = computed(() => props.result.shotsFired ?? 0)
+const totalWaste = computed(() => props.result.totalWaste ?? 0)
+const totalEnemies = computed(() => props.result.totalEnemies ?? 0)
 
 const scorePercent = computed<number>(() => {
   const denominator = shotsFired.value + totalWaste.value

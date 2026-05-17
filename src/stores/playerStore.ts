@@ -27,6 +27,7 @@ export const usePlayerStore = defineStore('player', (): PlayerStore => {
     redReload.value = 0
     greenReload.value = 0
     blueReload.value = 0
+    activeTrack.value = 0
   }
 
   function getLoadedColorValue(): ColorValue {

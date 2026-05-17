@@ -1,5 +1,5 @@
 import {getCurrentInstance, onUnmounted} from 'vue'
-import type {FireResult} from '@/types/gameTypes.ts'
+import type {FireResult, LevelState} from '@/types/gameTypes.ts'
 
 type Handler<T> = (payload: T) => void
 
