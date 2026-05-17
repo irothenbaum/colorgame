@@ -77,18 +77,18 @@ $transitionPause: $transitionPauseSpeed $transitionStepEase;
   --color-red: #ff0000;
   --color-red-inactive: #CC2222;
   --color-red-disabled: #BB8888;
+  --color-red-pastel: #ff8080;
   --color-green: #00FF00;
   --color-green-inactive: #22AA22;
   --color-green-disabled: #88BB88;
+  --color-green-pastel: #76eb9d;
   --color-blue: #0000FF;
   --color-blue-inactive: #2222CC;
   --color-blue-disabled: #8888BB;
+  --color-blue-pastel: #809fff;
 
-  --font-family-title: 'Big Shoulders Display', sans-serif;
+  --font-family-title: 'Big Shoulders Display', arial, sans-serif;
 
-  --color-pastel-red: #FF9B9B;
-  --color-pastel-green: #9BEBB5;
-  --color-pastel-blue: #9BB3FF;
 
   --color-track-bg: var(--color-black);
   --color-track-selected-bg: var(--color-white);
