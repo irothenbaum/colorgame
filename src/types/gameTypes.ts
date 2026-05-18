@@ -79,9 +79,15 @@ export interface LevelHighScore {
   lastPlay: ScoreEntry
 }
 
+export interface DailyStreakData {
+  current: number
+  lastPlayedDate: string  // YYYY-MM-DD (UTC)
+}
+
 // Full persisted blob
 export interface HighScoresData {
   levels: Record<string, LevelHighScore>
+  dailyStreak?: DailyStreakData
 }
 
 // View type passed to UI components

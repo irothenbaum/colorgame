@@ -6,11 +6,15 @@ import {STAR, CHECK, TROPHY, CALENDAR} from '@/constants/icons.ts'
 import {useGameStore} from '@/stores/gameStore.ts'
 import {useMenuStore} from '@/stores/menuStore.ts'
 import {Scene} from '@/types/menuTypes.ts'
+import LevelCardAccentBar from '@/components/LevelCardAccentBar.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   level: LevelDefinition
   highScore: LevelScoreView | null
-}>()
+  rank?: number
+}>(), {
+  rank: 0,
+})
 
 const menuStore = useMenuStore()
 const gameStore = useGameStore()
@@ -38,8 +42,8 @@ function handlePlay() {
 </script>
 
 <template>
-  <div class="level-card" :style="{borderColor: accentColor}">
-    <div class="accent-bar" :style="{backgroundColor: accentColor}" />
+  <div class="level-card">
+    <LevelCardAccentBar :color="accentColor" :rank="rank" />
 
     <h3>{{ level.name }}</h3>
     <p>{{ level.description }}</p>
@@ -78,7 +82,7 @@ function handlePlay() {
     position: absolute;
     right: 0;
     top: 0;
-    width: 1rem;
+    width: 0.7rem;
     height: 100%;
   }
 

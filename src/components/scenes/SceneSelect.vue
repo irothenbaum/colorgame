@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
     </li>
     <li v-for="(l, i) in levels" v-bind:key="l.id" class="level-card-item" :class="liClass((isDev ? 6 : 5) + i)">
       <h4>{{ l.name }}</h4>
-      <LevelCard :level="l" :high-score="highScoresStore.getLevelScores(l.id)" />
+      <LevelCard :level="l" :high-score="highScoresStore.getLevelScores(l.id)" :rank="i + 1" />
     </li>
   </ul>
 </template>
