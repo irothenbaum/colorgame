@@ -104,7 +104,7 @@ onUnmounted(() => {
   .hue-title {
     font-family: var(--font-family-title);
     font-weight: 400;
-    font-size: 40cqw;
+    font-size: 20cqh;
     line-height: 0.85;
 
     $blur: 0.05em;
@@ -128,7 +128,7 @@ onUnmounted(() => {
     position: relative;
     font-family: var(--font-family-title);
     font-weight: 600;
-    font-size: 28cqw;
+    font-size: 14cqh;
     line-height: 1;
     color: var(--color-near-black);
 

@@ -86,7 +86,7 @@ onUnmounted(() => {
   height: 100%;
   width: 100%;
   container-type: inline-size;
-  background: black;
+  background: var(--color-white);
 
   .training-world {
     width: 100%;
