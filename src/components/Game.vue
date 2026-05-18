@@ -10,6 +10,7 @@ import {storeToRefs} from 'pinia'
 import {onMounted} from 'vue'
 import {useTimeout} from '@/composables/useInterval.ts'
 import DailyLevel from '@/components/scenes/DailyLevel.vue'
+import LevelBuilder from '@/components/scenes/LevelBuilder.vue'
 
 const menuStore = useMenuStore()
 const {scene, gameHasLoaded} = storeToRefs(menuStore)
@@ -23,7 +24,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="game-container">
+  <div class="game-container" :class="{'game-loaded': gameHasLoaded}">
     <div class="reveal-overlay" v-if="!gameHasLoaded" />
     <SceneSelect v-if="scene === Scene.SCENE_SELECT" />
     <PlayLevel v-else-if="scene === Scene.PLAY_LEVEL" />
@@ -31,6 +32,7 @@ onMounted(() => {
     <EndlessLevel v-else-if="scene === Scene.ENDLESS" />
     <DailyLevel v-else-if="scene === Scene.DAILY" />
     <TutorialLevel v-else-if="scene === Scene.TUTORIAL" />
+    <LevelBuilder v-else-if="scene === Scene.LEVEL_BUILDER" />
   </div>
 </template>
 

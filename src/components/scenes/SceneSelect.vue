@@ -10,6 +10,8 @@ import DailyCard from '@/components/menu/DailyCard.vue'
 import TrainingCard from '@/components/menu/TrainingCard.vue'
 import LandingCard from '@/components/menu/LandingCard.vue'
 import TutorialCard from '@/components/menu/TutorialCard.vue'
+import {useTimeout} from '@/composables/useInterval.ts'
+import LevelBuilderCard from '@/components/menu/LevelBuilderCard.vue'
 
 const levels: LevelDefinition[] = loadAllLevels()
 const highScoresStore = useHighScoresStore()
@@ -17,6 +19,8 @@ const menuStore = useMenuStore()
 
 const listEl = ref<HTMLElement | null>(null)
 const activeLiIndex = ref<number>(3) // default to landing card to avoid flash
+const canMarkScrolled = ref<boolean>(false)
+const hasScrolled = ref<boolean>(false)
 
 function liClass(index: number) {
   const diff = activeLiIndex.value - index
@@ -43,6 +47,9 @@ function updateActiveIndex() {
     }
   })
   activeLiIndex.value = closestIdx
+  if (canMarkScrolled.value) {
+    hasScrolled.value = true
+  }
 }
 
 onMounted(async () => {
@@ -62,6 +69,10 @@ onMounted(async () => {
 
   updateActiveIndex()
   listEl.value.addEventListener('scroll', updateActiveIndex, {passive: true})
+
+  useTimeout(() => {
+    canMarkScrolled.value = true
+  }, 500) // Don't show peek styles until after the initial scroll position is set and the user has had a moment to see it
 })
 
 onBeforeUnmount(() => {
@@ -73,7 +84,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <ul class="scenes-container" ref="listEl">
+  <ul class="scenes-container" ref="listEl" :class="{'has-scrolled': hasScrolled}">
     <li :class="liClass(0)">
       <h4>Endless</h4>
       <EndlessCard />
@@ -94,14 +105,18 @@ onBeforeUnmount(() => {
       <h4>Tutorial</h4>
       <TutorialCard />
     </li>
-    <li v-for="(l, i) in levels" v-bind:key="l.id" class="level-card-item" :class="liClass(5 + i)">
+    <li :class="liClass(5)" v-if="import.meta.env.DEV">
+      <h4>Level Builder</h4>
+      <LevelBuilderCard />
+    </li>
+    <li v-for="(l, i) in levels" v-bind:key="l.id" class="level-card-item" :class="liClass(6 + i)">
       <h4>{{ l.name }}</h4>
       <LevelCard :level="l" :high-score="highScoresStore.getLevelScores(l.id)" />
     </li>
   </ul>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 @use '../../styles';
 
 .scenes-container {
@@ -167,5 +182,10 @@ onBeforeUnmount(() => {
       top: var(--peek-distance, auto);
     }
   }
+}
+
+// This isn't working on mount (which is the only time it SHOULD worK) for some reason?
+.game-container:not(.game-loaded) .scenes-container li > h4 {
+  transition-delay: calc(var(--peek-fade-delay, 0s) + 3s) !important; // 3s = the fade in duration on first mount
 }
 </style>

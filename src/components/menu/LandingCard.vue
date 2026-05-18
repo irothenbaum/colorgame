@@ -187,4 +187,8 @@ onUnmounted(() => {
     }
   }
 }
+
+.has-scrolled .idle-chevrons {
+  display: none !important;
+}
 </style>

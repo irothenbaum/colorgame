@@ -5,6 +5,7 @@ export enum Scene {
   TUTORIAL = 'tutorial',
   ENDLESS = 'endless',
   DAILY = 'daily',
+  LEVEL_BUILDER = 'level-builder',
 }
 
 export interface MenuState {

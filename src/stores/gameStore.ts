@@ -4,12 +4,11 @@ import {PlayState, EnemyType} from '@/types/gameTypes.ts'
 import type {GameState, LevelDefinition, FireResult} from '@/types/gameTypes.ts'
 import type { Reactive, } from '@/types/utilityTypes.ts'
 import { usePlayerStore } from '@/stores/playerStore.ts'
-import {instantiateEnemies} from '@/helpers/gameUtils.ts'
+import {applyShotToEnemy, instantiateEnemies} from '@/helpers/gameUtils.ts'
 import type {ColorValue} from '@/types/colorTypes.ts'
 import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
 import {EventType, listen, broadcast, type EventPayload} from '@/composables/useEvents.ts'
 import {useHighScoresStore} from '@/stores/highScoresStore.ts'
-
 
 export interface GameStore extends Reactive<GameState> {
   startLevel: (level: LevelDefinition) => void
@@ -107,52 +106,31 @@ export const useGameStore = defineStore('game', (): GameStore => {
   function fireShot(track: number, color: ColorValue): FireResult {
     levelState.value!.shotsFired++
 
-    const retVal: FireResult = {
-      struckEnemy: true,
-      projectile: color,
-      track: track,
-    }
-
     const firstEnemy = Object.values(levelState.value!.enemiesLookup).filter(
       e => e.track === track
         && !levelState.value!.killedEnemyIds.includes(e.id)
         && getValueFromColor(e.healthRemaining) > 0
     )[0]
 
-    if (firstEnemy) {
-      retVal.struckEnemyId = firstEnemy.id
+    const retVal = applyShotToEnemy(firstEnemy, color)
 
-      // what's left of the enemy after being hit by the shot
-      retVal.debris = collideColors(firstEnemy.healthRemaining, color)
+    // hydrate track
+    retVal.track = track
 
-      if (getValueFromColor(retVal.debris) === 0) {
-        delete retVal.debris // no debris if the enemy is destroyed
-      }
-
-      // what's left of the shot after hitting the enemy
-      retVal.shrapnel = collideColors(color, firstEnemy.healthRemaining)
+    // track fire stats
+    if (retVal.shrapnel) {
       const shrapnelValue = getValueFromColor(retVal.shrapnel)
-
-      if (shrapnelValue === 0) {
-        // shot is fully absorbed, no shrapnel
-        retVal.damageDone = color
-        delete retVal.shrapnel
-      } else {
-        // shot is partially absorbed, shrapnel is what's left of the shot, and damage done is the difference between the original shot and the shrapnel
+      if (shrapnelValue > 0) {
         levelState.value!.totalWaste += shrapnelValue
-        retVal.damageDone = collideColors(color, retVal.shrapnel)
       }
+    }
 
-      if (retVal.debris) {
-        levelState.value!.enemiesLookup[firstEnemy.id].healthRemaining = retVal.debris
-      } else {
-        // Enemy is destroyed — zero out health immediately so the next shot targets the next enemy,
-        // but don't add to killedEnemyIds yet (that happens after the animation via EnemyDestroyed)
-        levelState.value!.enemiesLookup[firstEnemy.id].healthRemaining = {red: 0, green: 0, blue: 0}
-      }
+    if (retVal.debris) {
+      levelState.value!.enemiesLookup[firstEnemy.id].healthRemaining = retVal.debris
     } else {
-      retVal.struckEnemy = false
-      retVal.shrapnel = color // 100% shrapnel if it misses entirely
+      // Enemy is destroyed — zero out health immediately so the next shot targets the next enemy,
+      // but don't add to killedEnemyIds yet (that happens after the animation via EnemyDestroyed)
+      levelState.value!.enemiesLookup[firstEnemy.id].healthRemaining = {red: 0, green: 0, blue: 0}
     }
 
     broadcast(EventType.ShotFired, retVal)
