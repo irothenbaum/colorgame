@@ -1,9 +1,27 @@
 import type { LevelDefinition, EnemyDefinition, EnemyState, FireResult} from '../types/gameTypes';
 import { EnemyType,  } from '../types/gameTypes';
 import {v4 as uuid} from 'uuid';
+import {ColorType, type ColorValue} from '@/types/colorTypes.ts'
 import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
-import {broadcast, EventType} from '@/composables/useEvents.ts'
-import type {ColorValue} from '@/types/colorTypes.ts'
+
+export function generateRandomEnemy(track: number): EnemyState {
+  const channels: Array<keyof ColorValue> = [ColorType.red, ColorType.green, ColorType.blue]
+  const shuffled = [...channels].sort(() => Math.random() - 0.5)
+  const activeCount = Math.ceil(Math.random() * 3) // 1–3 channels
+
+  const health: ColorValue = {red: 0, green: 0, blue: 0}
+  shuffled.slice(0, activeCount).forEach(ch => {
+    health[ch] = Math.ceil(Math.random() * 4) // 1–4 units per channel
+  })
+
+  return {
+    id: uuid(),
+    type: EnemyType.Pixel,
+    track,
+    health,
+    healthRemaining: {...health},
+  }
+}
 
 export function instantiateEnemy(enemyDef: EnemyDefinition, trackCount: number): EnemyState {
   return {

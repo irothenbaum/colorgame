@@ -5,6 +5,7 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
   const fired = ref(false)
   const touchActive = ref(false)
   const pressing = ref(false)
+  let touchActiveTimer: ReturnType<typeof setTimeout> | null = null
 
   const startTimer = () => {
     fired.value = false
@@ -16,7 +17,24 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
     }, duration)
   }
 
+  const scheduleClearTouchActive = () => {
+    if (touchActiveTimer) {
+      clearTimeout(touchActiveTimer)
+    }
+    // keep touchActive true long enough to swallow the synthetic mouse events browsers fire after touch
+    touchActiveTimer = setTimeout(() => {
+      touchActive.value = false
+      touchActiveTimer = null
+    }, 300)
+  }
+
   const onTouchstart = (e: TouchEvent) => {
+    // Cancel any pending touchActive clear so a rapid tap+longpress doesn't
+    // let the first tap's 300ms window expire mid-interaction
+    if (touchActiveTimer) {
+      clearTimeout(touchActiveTimer)
+      touchActiveTimer = null
+    }
     touchActive.value = true
     startTimer()
   }
@@ -31,35 +49,44 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
       clearTimeout(timer.value)
       timer.value = null
     }
-    if (!fired.value) onTap()
+    if (!fired.value) {
+      onTap()
+    }
     fired.value = false
-    // keep touchActive true long enough to swallow the synthetic mouse events browsers fire after touch
-    setTimeout(() => { touchActive.value = false }, 300)
+    scheduleClearTouchActive()
   }
 
   const onTouchcancel = () => {
     abort()
-    setTimeout(() => { touchActive.value = false }, 300)
+    scheduleClearTouchActive()
   }
 
   const onMousedown = () => {
-    if (touchActive.value) return
+    if (touchActive.value) {
+      return
+    }
     startTimer()
   }
 
   const onMouseup = () => {
-    if (touchActive.value) return
+    if (touchActive.value) {
+      return
+    }
     pressing.value = false
     if (timer.value) {
       clearTimeout(timer.value)
       timer.value = null
     }
-    if (!fired.value) onTap()
+    if (!fired.value) {
+      onTap()
+    }
     fired.value = false
   }
 
   const onMouseleave = () => {
-    if (touchActive.value) return
+    if (touchActive.value) {
+      return
+    }
     abort()
   }
 
@@ -72,7 +99,12 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
     fired.value = false
   }
 
-  onUnmounted(abort)
+  onUnmounted(() => {
+    abort()
+    if (touchActiveTimer) {
+      clearTimeout(touchActiveTimer)
+    }
+  })
 
   return {
     pressing,

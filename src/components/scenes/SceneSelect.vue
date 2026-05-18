@@ -16,6 +16,7 @@ import LevelBuilderCard from '@/components/menu/LevelBuilderCard.vue'
 const levels: LevelDefinition[] = loadAllLevels()
 const highScoresStore = useHighScoresStore()
 const menuStore = useMenuStore()
+const isDev = import.meta.env.DEV
 
 const listEl = ref<HTMLElement | null>(null)
 const activeLiIndex = ref<number>(3) // default to landing card to avoid flash
@@ -105,11 +106,11 @@ onBeforeUnmount(() => {
       <h4>Tutorial</h4>
       <TutorialCard />
     </li>
-    <li :class="liClass(5)" v-if="import.meta.env.DEV">
+    <li v-if="isDev" :class="liClass(5)">
       <h4>Level Builder</h4>
       <LevelBuilderCard />
     </li>
-    <li v-for="(l, i) in levels" v-bind:key="l.id" class="level-card-item" :class="liClass(6 + i)">
+    <li v-for="(l, i) in levels" v-bind:key="l.id" class="level-card-item" :class="liClass((isDev ? 6 : 5) + i)">
       <h4>{{ l.name }}</h4>
       <LevelCard :level="l" :high-score="highScoresStore.getLevelScores(l.id)" />
     </li>
