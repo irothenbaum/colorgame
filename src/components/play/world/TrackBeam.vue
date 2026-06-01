@@ -10,7 +10,7 @@ import type {ColorValue} from '@/types/colorTypes.ts'
 
 const props = defineProps<{
   trackIndex: number
-  tipPosition: number // current visual position of the furthest-advanced enemy (in vertical units)
+  getCurrentTipPosition: () => number
 }>()
 
 const {on} = useEvents()
@@ -18,12 +18,14 @@ const {on} = useEvents()
 const beamColor = ref<ColorValue | null>(null)
 const beamTimer = ref<TimerHandle | null>(null)
 const beamFading = ref<boolean>(false)
+const beamTipPosition = ref<number>(0)
 
 on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   if (payload.track !== props.trackIndex) return
 
   beamTimer.value?.cancel()
   beamColor.value = payload.projectile
+  beamTipPosition.value = props.getCurrentTipPosition()
   beamFading.value = false
   requestAnimationFrame(() => {
     beamFading.value = true
@@ -46,7 +48,7 @@ on(EventType.LevelWon, clear)
 
 const beamStyles = computed<CSSProperties>(() => {
   if (!beamColor.value) return {display: 'none'}
-  const tipPercent = (props.tipPosition / VERTICAL_UNITS) * 100
+  const tipPercent = (beamTipPosition.value / VERTICAL_UNITS) * 100
   const heightPercent = 100 - tipPercent
   return {
     background: colorHealthToColor(beamColor.value),

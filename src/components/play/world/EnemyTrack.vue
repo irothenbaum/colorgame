@@ -150,7 +150,7 @@ const styles = computed<CSSProperties>(() => {
 
 <template>
   <div class="enemy-track" :class="{selected: trackIndex === activeTrack}">
-    <TrackBeam :track-index="trackIndex" :tip-position="currentVisualPosition()" />
+    <TrackBeam :track-index="trackIndex" :get-current-tip-position="currentVisualPosition" />
     <div class="enemies-container" :class="{moving: isMoving}" :style="styles">
       <Enemy v-for="e in spawnedEnemies" v-bind:key="e.id" :enemy="e" />
     </div>
