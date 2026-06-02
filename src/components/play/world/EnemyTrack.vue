@@ -13,6 +13,8 @@ import type {EventPayload} from '@/composables/useEvents.ts'
 import {EventType, useEvents} from '@/composables/useEvents.ts'
 import {getValueFromColor} from '@/helpers/colorUtils.ts'
 import {usePlayerStore} from '@/stores/playerStore.ts'
+import TrackBeam from '@/components/play/world/TrackBeam.vue'
+import ShrapnelIndicator from '@/components/play/world/ShrapnelIndicator.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -149,6 +151,8 @@ const styles = computed<CSSProperties>(() => {
 
 <template>
   <div class="enemy-track" :class="{selected: trackIndex === activeTrack}">
+    <TrackBeam :track-index="trackIndex" :get-current-tip-position="currentVisualPosition" />
+    <ShrapnelIndicator :track-index="trackIndex" :get-current-tip-position="currentVisualPosition" />
     <div class="enemies-container" :class="{moving: isMoving}" :style="styles">
       <Enemy v-for="e in spawnedEnemies" v-bind:key="e.id" :enemy="e" />
     </div>
