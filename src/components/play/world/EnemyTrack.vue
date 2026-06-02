@@ -165,7 +165,8 @@ const styles = computed<CSSProperties>(() => {
   width: 100%;
   background: var(--color-track-bg);
   container-type: size;
-  padding: 0 var(--space-xs);
+  padding: 0 1px;
+  transition: padding 0.3s ease-out;
   &:after {
     content: '';
     position: absolute;
@@ -177,17 +178,31 @@ const styles = computed<CSSProperties>(() => {
     transition: opacity 0.3s ease-out;
   }
 
+  :deep(.enemy span) {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+  }
+
   &.selected {
     background: var(--color-track-selected-bg);
+    padding: 0;
     &:after {
       opacity: 0;
+    }
+    :deep(.enemy span) {
+      opacity: 1;
+    }
+    .enemies-container {
+      left: 0;
+      width: 100%;
     }
   }
 
   .enemies-container {
     position: absolute;
-    left: var(--space-xs);
-    width: calc(100% - 2 * var(--space-xs));
+    left: 1px;
+    width: calc(100% - 2px);
+    transition: left 0.3s ease-out, width 0.3s ease-out;
     height: 100%;
     top: -100%; // just off screen at the top
     transition: transform 30s linear;

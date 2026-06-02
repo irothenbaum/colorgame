@@ -9,10 +9,13 @@ import type {ColorValue} from '@/types/colorTypes.ts'
 import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
 import {EventType, listen, broadcast, type EventPayload} from '@/composables/useEvents.ts'
 import {useHighScoresStore} from '@/stores/highScoresStore.ts'
+import {useMenuStore} from '@/stores/menuStore.ts'
+import {Scene} from '@/types/menuTypes.ts'
 
 export interface GameStore extends Reactive<GameState> {
   startLevel: (level: LevelDefinition) => void
   endLevel: () => void
+  endGame: () => void
   fireShot: (track: number, color: ColorValue) => FireResult
   togglePause: (nowPaused?: boolean) => void
 }
@@ -72,6 +75,14 @@ export const useGameStore = defineStore('game', (): GameStore => {
 
   const playerStore = usePlayerStore()
   const highScoresStore = useHighScoresStore()
+  const menuStore = useMenuStore()
+
+  function endGame() {
+    currentLevel.value = undefined
+    levelState.value = undefined
+    results.value = []
+    menuStore.goToScene(Scene.SCENE_SELECT)
+  }
 
   function endLevel() {
     if (!currentLevel.value || !levelState.value) {
@@ -148,6 +159,7 @@ export const useGameStore = defineStore('game', (): GameStore => {
     startLevel,
     fireShot,
     endLevel,
+    endGame,
     togglePause
   }
 })

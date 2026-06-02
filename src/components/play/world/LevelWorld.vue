@@ -10,7 +10,12 @@ const {currentLevel} = storeToRefs(gameStore)
 <template>
   <div class="world">
     <template v-if="currentLevel">
-      <EnemyTrack v-for="i in currentLevel.tracks" :key="i" :track-index="i - 1" />
+      <EnemyTrack
+        v-for="i in currentLevel.tracks"
+        :key="i"
+        :track-index="i - 1"
+        :speed-multiplier="1 / currentLevel.tracks"
+      />
     </template>
   </div>
 </template>
@@ -23,6 +28,7 @@ const {currentLevel} = storeToRefs(gameStore)
   background: var(--color-track-bg);
   @include styles.flex-row(0);
   overflow: hidden;
+
   &:after {
     z-index: 10;
     width: 100%;
@@ -34,6 +40,15 @@ const {currentLevel} = storeToRefs(gameStore)
     height: 2rem;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1) 30%, rgba(0, 0, 0, 0));
     pointer-events: none;
+  }
+
+  .enemy-track {
+    flex: 1;
+    transition: width 0.3s ease-out;
+
+    &.selected {
+      flex: 3;
+    }
   }
 }
 </style>

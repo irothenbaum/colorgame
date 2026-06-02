@@ -80,10 +80,6 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   width: 100%;
   overflow: visible;
   position: relative;
-
-  &.spacer {
-    opacity: 0;
-  }
 }
 
 .enemy {

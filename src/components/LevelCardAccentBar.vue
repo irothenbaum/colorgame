@@ -16,8 +16,6 @@ const props = withDefaults(
 
 const largeBarsCount = computed(() => Math.floor(props.rank / RANK_BASE))
 const smallBarsCount = computed(() => (props.rank - largeBarsCount.value * RANK_BASE) % RANK_BASE)
-
-console.log(smallBarsCount.value)
 </script>
 
 <template>
@@ -40,8 +38,6 @@ console.log(smallBarsCount.value)
     width: 100%;
     background-color: var(--color-white);
     margin-bottom: var(--space-xs);
-    border-left: 2px solid var(--color-light-grey);
-    border-right: 2px solid var(--color-light-grey);
 
     &.large {
       height: var(--space-lg);
@@ -51,5 +47,18 @@ console.log(smallBarsCount.value)
       height: var(--space-sm);
     }
   }
+  //
+  //:after {
+  //  content: '';
+  //  position: absolute;
+  //  top: 0;
+  //  left: 0;
+  //  width: 40%;
+  //  height: 100%;
+  //  background: var(--color-shadow-light);
+  //  opacity: 0.3;
+  //  border-bottom: 0;
+  //  border-top: 0;
+  //}
 }
 </style>
