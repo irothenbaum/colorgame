@@ -8,6 +8,7 @@ import {EventType, useEvents} from '@/composables/useEvents.ts'
 import {EnemyType, PlayState} from '@/types/gameTypes.ts'
 import type {EnemyDefinition, LevelDefinition} from '@/types/gameTypes.ts'
 import type {ColorValue} from '@/types/colorTypes.ts'
+import {ColorType} from '@/types/colorTypes.ts'
 import LevelResults from '@/components/play/LevelResults.vue'
 import PauseModal from '@/components/play/PauseModal.vue'
 import {useMenuStore} from '@/stores/menuStore.ts'
@@ -38,7 +39,7 @@ function generateDailyLevel(): LevelDefinition {
 
   const trackCount = Math.floor(dRandom() * 3) + 1
 
-  const channels: Array<keyof ColorValue> = ['red', 'green', 'blue']
+  const channels: Array<keyof ColorValue> = [ColorType.red, ColorType.green, ColorType.blue]
   const enemies: EnemyDefinition[] = []
 
   for (let i = 0; i < 100; i++) {

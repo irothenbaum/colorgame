@@ -82,7 +82,6 @@ const {pressing, events} = useLongPress(
   .pulse-ring {
     position: absolute;
     inset: 0;
-    border-radius: var(--space-sm);
     color: var(--color);
     pointer-events: none;
     animation: pulse-expand 0.5s ease-out forwards;
@@ -110,7 +109,6 @@ const {pressing, events} = useLongPress(
 
   height: 100%;
   width: 100%;
-  border-radius: var(--space-sm);
   container-type: size;
   @include styles.long-press-progress(bottom, styles.$colorResetDelay);
 

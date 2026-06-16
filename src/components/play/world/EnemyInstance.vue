@@ -80,6 +80,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   width: 100%;
   overflow: visible;
   position: relative;
+  @include styles.drop-shadow();
 }
 
 .enemy {

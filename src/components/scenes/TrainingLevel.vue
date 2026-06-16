@@ -2,6 +2,8 @@
 import {computed, onMounted, onUnmounted} from 'vue'
 import PlayControls from '@/components/play/controls/PlayControls.vue'
 import TrainingEnemy from '@/components/training/TrainingEnemy.vue'
+import TrackBeam from '@/components/play/world/TrackBeam.vue'
+import ShrapnelIndicator from '@/components/play/world/ShrapnelIndicator.vue'
 import {useGameStore} from '@/stores/gameStore.ts'
 import {useMenuStore} from '@/stores/menuStore.ts'
 import {Scene} from '@/types/menuTypes.ts'
@@ -10,6 +12,11 @@ import {type LevelDefinition, PlayState} from '@/types/gameTypes.ts'
 import {storeToRefs} from 'pinia'
 import {generateRandomEnemy} from '@/helpers/gameUtils.ts'
 import PauseModal from '@/components/play/PauseModal.vue'
+import {VERTICAL_UNITS} from '@/constants/environment.ts'
+
+function getCurrentTipPosition() {
+  return VERTICAL_UNITS / 2
+}
 
 const TRAINING_LEVEL: LevelDefinition = {
   id: 'training',
@@ -72,6 +79,8 @@ onUnmounted(() => {
   <PauseModal v-if="levelState?.playState === PlayState.Paused" />
   <div class="training-level">
     <div class="training-world">
+      <TrackBeam :track-index="0" :get-current-tip-position="getCurrentTipPosition" />
+      <ShrapnelIndicator :track-index="0" :get-current-tip-position="getCurrentTipPosition" />
       <TrainingEnemy v-if="activeEnemy" :key="activeEnemy.id" :enemy="activeEnemy" />
     </div>
     <PlayControls />
@@ -89,6 +98,7 @@ onUnmounted(() => {
   background: var(--color-white);
 
   .training-world {
+    position: relative;
     width: 100%;
     flex: 1;
     container-type: size;

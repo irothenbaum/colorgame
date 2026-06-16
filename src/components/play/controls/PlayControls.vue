@@ -11,7 +11,6 @@ const playerStore = usePlayerStore()
 const gameStore = useGameStore()
 
 const {currentLevel} = storeToRefs(gameStore)
-
 </script>
 
 <template>
@@ -34,6 +33,7 @@ const {currentLevel} = storeToRefs(gameStore)
 
 .controls {
   background: var(--color-controls-bg);
+  box-shadow: 0 calc(-1 * var(--space-xs)) var(--space-lg) rgba(0, 0, 0, 0.1);
 
   .action-controls {
     height: 50%;

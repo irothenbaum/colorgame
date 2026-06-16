@@ -21,7 +21,9 @@ const beamFading = ref<boolean>(false)
 const beamTipPosition = ref<number>(0)
 
 on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
-  if (payload.track !== props.trackIndex) return
+  if (payload.track !== props.trackIndex) {
+    return
+  }
 
   beamTimer.value?.cancel()
   beamColor.value = payload.projectile
@@ -67,7 +69,7 @@ const beamStyles = computed<CSSProperties>(() => {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 30%;
+  width: var(--track-beam-width);
   opacity: 1;
   pointer-events: none;
   z-index: 1;

@@ -4,7 +4,7 @@ import {usePlayerStore} from '@/stores/playerStore'
 import {useGameStore} from '@/stores/gameStore'
 import {colorHealthToColor, getContrastColor} from '@/helpers/colorUtils'
 import {useLongPress} from '@/composables/useLongPress'
-import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
+import {COLOR_RESET_DELAY_MS, DAMAGE_FLASH_DURATION_MS} from '@/constants/environment'
 import {storeToRefs} from 'pinia'
 import {getValueFromColor} from '@/helpers/colorUtils.ts'
 import {useTimeout} from '@/composables/useInterval.ts'
@@ -16,6 +16,8 @@ const {activeTrack} = storeToRefs(playerStore)
 
 const loadedColor = computed(() => playerStore.getLoadedColorValue())
 const backgroundColor = computed(() => colorHealthToColor(loadedColor.value))
+const frozenColor = ref<string | null>(null)
+const displayColor = computed(() => frozenColor.value ?? backgroundColor.value)
 
 const pulses = ref<{id: number, color: string}[]>([])
 let nextPulseId = 0
@@ -28,10 +30,12 @@ const {pressing, events} = useLongPress(
       return
     }
     const color = backgroundColor.value
+    frozenColor.value = color
     playerStore.handleFireResult(gameStore.fireShot(activeTrack.value, loadedColor.value))
     const id = nextPulseId++
     pulses.value.push({id, color})
     useTimeout(() => { pulses.value = pulses.value.filter(p => p.id !== id) }, 500)
+    useTimeout(() => { frozenColor.value = null }, DAMAGE_FLASH_DURATION_MS)
   },
   () => {
     playerStore.redLoaded = 0
@@ -42,7 +46,7 @@ const {pressing, events} = useLongPress(
 )
 
 const textColor = computed(() => {
-  return getContrastColor(backgroundColor.value)
+  return getContrastColor(displayColor.value)
 })
 
 const label = "PRINT"
@@ -50,7 +54,7 @@ const label = "PRINT"
 
 <template>
   <div class="fire-button">
-    <button class="fire-button-inner" :class="{pressing}" :style="{backgroundColor, color: textColor}" v-on="events">
+    <button class="fire-button-inner" :class="{pressing}" :style="{backgroundColor: displayColor, color: textColor}" v-on="events">
       <span v-for="(char, index) in label" :key="index" class="fire-button-char">
         {{ char }}
       </span>
@@ -82,7 +86,6 @@ const label = "PRINT"
     height: 100%;
     width: 100%;
     border: none;
-    border-radius: var(--space-sm);
     cursor: pointer;
     @include styles.block-text;
     @include styles.text-shadow();
@@ -102,7 +105,6 @@ const label = "PRINT"
   .pulse-ring {
     position: absolute;
     inset: 0;
-    border-radius: var(--space-sm);
     pointer-events: none;
     animation: pulse-expand 0.5s ease-out forwards;
   }
