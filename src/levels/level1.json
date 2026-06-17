@@ -23,6 +23,14 @@
         "green": 0,
         "blue": 1
       }
+    },
+    {
+      "type": "atomic",
+      "health": {
+        "red": 3,
+        "green": 2,
+        "blue": 1
+      }
     }
   ]
 }

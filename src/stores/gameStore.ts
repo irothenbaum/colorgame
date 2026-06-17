@@ -128,6 +128,13 @@ export const useGameStore = defineStore('game', (): GameStore => {
     // hydrate track
     retVal.track = track
 
+    // Atomic enemies only yield to a perfect shot (no shrapnel, no debris left over)
+    if (firstEnemy?.type === EnemyType.Atomic && (retVal.shrapnel || retVal.debris)) {
+      const missResult: FireResult = {struckEnemy: false, projectile: color, track, shrapnel: color}
+      broadcast(EventType.ShotFired, missResult)
+      return missResult
+    }
+
     // track fire stats
     if (retVal.shrapnel) {
       const shrapnelValue = getValueFromColor(retVal.shrapnel)

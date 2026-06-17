@@ -8,7 +8,8 @@ export enum PlayState {
 }
 
 export enum EnemyType {
-  Pixel = 'pixel',
+  Composite = 'composite',
+  Atomic = 'atomic',
   Spacer = 'spacer',
 }
 

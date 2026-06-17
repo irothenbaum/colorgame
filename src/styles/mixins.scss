@@ -154,9 +154,8 @@ $transitionTimings: (
 }
 
 // Shared styles for enemy block elements (EnemyInstance, TrainingEnemy).
-// $rounded: pass true to inherit border-radius on pseudo-elements and spans.
 // Callers must set --damage-flash-step-dur (= DAMAGE_FLASH_DURATION_MS / 3 ms) via v-bind.
-@mixin enemy-block($rounded: false) {
+@mixin enemy-block() {
   @at-root {
     @keyframes damage-flash {
       0%,
@@ -182,9 +181,6 @@ $transitionTimings: (
     content: '';
     position: absolute;
     inset: 0;
-    @if $rounded {
-      border-radius: inherit;
-    }
     background-color: var(--color-shadow-light);
   }
 
@@ -192,24 +188,16 @@ $transitionTimings: (
     content: '';
     position: absolute;
     inset: 0;
-    @if $rounded {
-      border-radius: inherit;
-    }
     background-color: white;
     animation: damage-flash var(--damage-flash-step-dur, 133ms) steps(2, end) 3 forwards;
     pointer-events: none;
     z-index: 3;
   }
 
-  span {
-    position: relative;
+  & > div {
     z-index: 2;
-    display: block;
     width: 100%;
     height: 100%;
-    @if $rounded {
-      border-radius: var(--border-radius-sm);
-    }
     background-color: inherit;
   }
 }

@@ -52,7 +52,7 @@ function generateDailyLevel(): LevelDefinition {
     })
 
     enemies.push({
-      type: EnemyType.Pixel,
+      type: EnemyType.Composite,
       health,
       track: Math.floor(dRandom() * trackCount),
     })

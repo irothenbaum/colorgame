@@ -4,6 +4,8 @@ import {v4 as uuid} from 'uuid';
 import {ColorType, type ColorValue} from '@/types/colorTypes.ts'
 import {collideColors, getValueFromColor} from '@/helpers/colorUtils.ts'
 
+const MAX_ENEMY_HEALTH_PER_CHANNEL = 3
+
 export function generateRandomEnemy(track: number): EnemyState {
   const channels: Array<keyof ColorValue> = [ColorType.red, ColorType.green, ColorType.blue]
   const shuffled = [...channels].sort(() => Math.random() - 0.5)
@@ -11,12 +13,12 @@ export function generateRandomEnemy(track: number): EnemyState {
 
   const health: ColorValue = {red: 0, green: 0, blue: 0}
   shuffled.slice(0, activeCount).forEach(ch => {
-    health[ch] = Math.ceil(Math.random() * 4) // 1–4 units per channel
+    health[ch] = Math.ceil(Math.random() * MAX_ENEMY_HEALTH_PER_CHANNEL)
   })
 
   return {
     id: uuid(),
-    type: EnemyType.Pixel,
+    type: EnemyType.Composite,
     track,
     health,
     healthRemaining: {...health},
@@ -24,12 +26,13 @@ export function generateRandomEnemy(track: number): EnemyState {
 }
 
 export function instantiateEnemy(enemyDef: EnemyDefinition, trackCount: number): EnemyState {
+  const healthValue = getValueFromColor(enemyDef.health)
   return {
     ...enemyDef,
     id: uuid(),
-    type: enemyDef.type || EnemyType.Pixel, // default to Pixel if type is not defined
+    type: (healthValue > 1 ? enemyDef.type : undefined) || EnemyType.Composite, // default to Composite if type is not defined, also if health is 1 it must be Composite
     track: enemyDef.track !== undefined ? enemyDef.track % trackCount : Math.floor(Math.random() * trackCount), // assign track based on definition or randomly
-    healthRemaining: enemyDef.health
+    healthRemaining: enemyDef.health,
   }
 }
 
