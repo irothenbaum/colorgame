@@ -19,7 +19,7 @@ const backgroundColor = computed(() => colorHealthToColor(loadedColor.value))
 const frozenColor = ref<string | null>(null)
 const displayColor = computed(() => frozenColor.value ?? backgroundColor.value)
 
-const pulses = ref<{id: number, color: string}[]>([])
+const pulses = ref<{id: number; color: string}[]>([])
 let nextPulseId = 0
 
 const loadedColorValue = computed(() => getValueFromColor(loadedColor.value))
@@ -34,31 +34,46 @@ const {pressing, events} = useLongPress(
     playerStore.handleFireResult(gameStore.fireShot(activeTrack.value, loadedColor.value))
     const id = nextPulseId++
     pulses.value.push({id, color})
-    useTimeout(() => { pulses.value = pulses.value.filter(p => p.id !== id) }, 500)
-    useTimeout(() => { frozenColor.value = null }, DAMAGE_FLASH_DURATION_MS)
+    useTimeout(() => {
+      pulses.value = pulses.value.filter(p => p.id !== id)
+    }, 500)
+    useTimeout(() => {
+      frozenColor.value = null
+    }, DAMAGE_FLASH_DURATION_MS)
   },
   () => {
     playerStore.redLoaded = 0
     playerStore.greenLoaded = 0
     playerStore.blueLoaded = 0
   },
-  COLOR_RESET_DELAY_MS
+  COLOR_RESET_DELAY_MS,
 )
 
 const textColor = computed(() => {
   return getContrastColor(displayColor.value)
 })
 
-const label = "PRINT"
+const label = 'PRINT'
 </script>
 
 <template>
   <div class="fire-button">
-    <button class="fire-button-inner" :class="{pressing}" :style="{backgroundColor: displayColor, color: textColor}" v-on="events">
-      <span v-for="(char, index) in label" :key="index" class="fire-button-char">
-        {{ char }}
-      </span>
-      <span>{{ loadedColorValue }}</span>
+    <button
+      class="fire-button-inner"
+      :class="{pressing}"
+      :style="{backgroundColor: displayColor, color: textColor}"
+      v-on="events"
+    >
+      <div class="fire-button-label">
+        <span v-for="(char, index) in label" :key="index" class="fire-button-char">
+          {{ char }}
+        </span>
+      </div>
+      <div class="fire-button-value">
+        <span>
+          {{ loadedColorValue }}
+        </span>
+      </div>
     </button>
     <span v-for="p in pulses" :key="p.id" class="pulse-ring" :style="{color: p.color}" />
   </div>
@@ -68,33 +83,49 @@ const label = "PRINT"
 @use '../../../styles';
 
 @keyframes pulse-expand {
-  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.7; }
-  100% { box-shadow: 0 0 0 var(--space-lg) currentColor; opacity: 0; }
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0.7;
+  }
+  100% {
+    box-shadow: 0 0 0 var(--space-lg) currentColor;
+    opacity: 0;
+  }
 }
 
 .fire-button {
   height: 100%;
   width: 100%;
-  container-type: size;
   position: relative;
 
   .fire-button-inner {
     @include styles.flex-row();
-    padding: 0 10cqw;
+    padding: 0 var(--space-md);
     justify-content: space-between;
     @include styles.long-press-progress(left, styles.$colorResetDelay);
     height: 100%;
     width: 100%;
     border: none;
     cursor: pointer;
-    @include styles.block-text;
-    @include styles.text-shadow();
-    font-size: min(50cqw, 60cqh);
+    container-type: size;
     transition:
       background-color 0.3s ease,
       color 0.2s ease;
 
-    span:last-child {
+    .fire-button-label {
+      width: 100%;
+      height: 100%;
+      @include styles.flex-row();
+      justify-content: space-between;
+    }
+
+    span {
+      font-size: 20cqw;
+      @include styles.block-text;
+      @include styles.text-shadow();
+    }
+
+    .fire-button-value {
       display: inline-block;
       width: 20%;
       flex-shrink: 0;

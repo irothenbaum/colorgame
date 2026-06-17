@@ -75,54 +75,8 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 <style scoped lang="scss">
 @use '../../styles';
 
-@keyframes damage-flash {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 .training-enemy {
-  border-radius: var(--border-radius-lg);
-  position: relative;
-  transition:
-    width v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
-    height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
-    padding v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;
-  @include styles.flex-row(var(--space-xs));
-  justify-content: space-evenly;
-  padding: var(--space-xs);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: var(--color-shadow-light);
-  }
-
-  &.flashing::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: white;
-    animation: damage-flash v-bind('(DAMAGE_FLASH_DURATION_MS / 3) + "ms"') steps(2, end) 3 forwards;
-    pointer-events: none;
-    z-index: 3;
-  }
-
-  span {
-    position: relative;
-    z-index: 2;
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--border-radius-sm);
-    background-color: inherit;
-  }
+  --damage-flash-step-dur: v-bind('(DAMAGE_FLASH_DURATION_MS / 3) + "ms"');
+  @include styles.enemy-block();
 }
 </style>

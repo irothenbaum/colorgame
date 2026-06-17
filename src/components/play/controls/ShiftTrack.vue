@@ -34,7 +34,6 @@ function handleShift() {
   height: 100%;
   width: 100%;
   background: var(--color-light-grey);
-  border-radius: var(--space-sm);
   container-type: size;
   display: flex;
   align-items: center;
