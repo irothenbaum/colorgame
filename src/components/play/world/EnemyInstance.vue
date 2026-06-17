@@ -40,7 +40,10 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 
   const targetHeightCQH = payload.debris ? (getValueFromColor(payload.debris) * 100) / VERTICAL_UNITS : 0
 
-  visualHeightCQH.value = (healthValue.value * 100) / VERTICAL_UNITS
+  // healthValue is already updated by the store before ShotFired is broadcast,
+  // so reconstruct the pre-shot height from damageDone to get a valid animation start point
+  const preShotHeightCQH = ((healthValue.value + getValueFromColor(payload.damageDone!)) * 100) / VERTICAL_UNITS
+  visualHeightCQH.value = preShotHeightCQH
   isFlashing.value = true
 
   requestAnimationFrame(() => {
@@ -64,7 +67,11 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 </script>
 
 <template>
-  <div class="enemy-container" :class="{[enemy.type]: true}" :style="{height: displayHeightCQH + 'cqh'}">
+  <div
+    class="enemy-container"
+    :class="{[enemy.type]: true, destroyed: isDestroyed}"
+    :style="{height: displayHeightCQH + 'cqh'}"
+  >
     <div
       class="enemy"
       :class="{flashing: isFlashing}"
@@ -102,8 +109,6 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   @include styles.drop-shadow();
 
   &.atomic {
-    overflow: hidden;
-
     &::after {
       content: '';
       position: absolute;
@@ -113,20 +118,23 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
       height: 200%;
       pointer-events: none;
       z-index: 4;
-      background: linear-gradient(
-        to right,
-        transparent 35%,
-        rgba(255, 255, 255, 0.5) 50%,
-        transparent 65%
-      );
+      background: linear-gradient(to right, transparent 35%, rgba(255, 255, 255, 0.5) 50%, transparent 65%);
       transform: rotate(30deg) translateX(-100%);
       animation: atomic-shine 3s ease-in-out infinite;
+    }
+
+    &.destroyed {
+      &::after,
+      .atomic-label {
+        display: none !important;
+      }
     }
   }
 }
 
 .enemy {
   --damage-flash-step-dur: v-bind('(DAMAGE_FLASH_DURATION_MS / 3) + "ms"');
+  --enemy-shrink-dur: v-bind('ENEMY_SHRINK_DURATION_MS + "ms"');
   @include styles.enemy-block();
   width: 100%;
   height: 100%;

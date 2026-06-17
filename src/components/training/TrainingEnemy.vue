@@ -68,7 +68,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
       padding: isDestroyed ? '0' : '',
     }"
   >
-    <span v-for="i in healthValue" :key="i" />
+    <div v-for="i in healthValue" :key="i" />
   </div>
 </template>
 
@@ -77,6 +77,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
 
 .training-enemy {
   --damage-flash-step-dur: v-bind('(DAMAGE_FLASH_DURATION_MS / 3) + "ms"');
+  --enemy-shrink-dur: v-bind('ENEMY_SHRINK_DURATION_MS + "ms"');
   @include styles.enemy-block();
 }
 </style>

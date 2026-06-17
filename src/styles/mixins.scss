@@ -173,9 +173,9 @@ $transitionTimings: (
   padding: var(--space-xs);
   position: relative;
   transition:
-    width v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
-    height v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out,
-    padding v-bind('ENEMY_SHRINK_DURATION_MS + "ms"') ease-out;
+    width var(--enemy-shrink-dur, 200ms) ease-out,
+    height var(--enemy-shrink-dur, 200ms) ease-out,
+    padding var(--enemy-shrink-dur, 200ms) ease-out;
 
   &::before {
     content: '';
