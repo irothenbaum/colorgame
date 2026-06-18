@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import {useGameStore} from '@/stores/gameStore'
+import {useLongPress} from '@/composables/useLongPress'
+import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
 
 const gameStore = useGameStore()
+
+const {pressing: quitPressing, events: quitEvents} = useLongPress(
+  () => {},
+  () => gameStore.endGame(),
+  COLOR_RESET_DELAY_MS,
+)
 </script>
 
 <template>
@@ -10,7 +18,7 @@ const gameStore = useGameStore()
       <h1>Paused</h1>
       <div class="pause-actions">
         <button class="btn btn-primary" @click="gameStore.togglePause(false)">Resume</button>
-        <button class="btn btn-secondary" @click="gameStore.endGame()">Quit</button>
+        <button class="btn btn-secondary" :class="{pressing: quitPressing}" v-on="quitEvents">Quit</button>
       </div>
     </div>
   </div>
@@ -69,6 +77,7 @@ const gameStore = useGameStore()
   &.btn-secondary {
     background: var(--color-light-grey);
     color: var(--color-near-black);
+    @include styles.long-press-progress(left, styles.$colorResetDelay);
   }
 }
 </style>

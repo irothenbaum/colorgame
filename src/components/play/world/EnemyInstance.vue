@@ -109,6 +109,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   @include styles.drop-shadow();
 
   &.atomic {
+    overflow: hidden;
     &::after {
       content: '';
       position: absolute;
@@ -124,6 +125,7 @@ on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
     }
 
     &.destroyed {
+      overflow: visible; // this visible -> hidden -> visible thing is accommodate the Shine
       &::after,
       .atomic-label {
         display: none !important;

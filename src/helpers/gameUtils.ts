@@ -38,10 +38,23 @@ export function instantiateEnemy(enemyDef: EnemyDefinition, trackCount: number):
 
 export function instantiateEnemies(level: LevelDefinition): Record<string, EnemyState> {
   const enemies: Record<string, EnemyState> = {}
+
+  // STRANGE: For some reason level 3 sometimes loads with blocks on the wrong side? The first red and green that should be on track 0 are randomly coming to track 1???
+  // I'm not sure fi the commeneted line below has an impact
+  // When I log level.enemies, it changes to reactive after a second play (play again)
+
+  // // remove trailing spacer type enemies from the end if they exist
+  // while (level.enemies.length > 0 && level.enemies[level.enemies.length - 1].type === EnemyType.Spacer) {
+  //   console.log("POPPING")
+  //   level.enemies.pop()
+  // }
+
   level.enemies.forEach(def => {
     const enemy = instantiateEnemy(def, level.tracks)
     enemies[enemy.id] = enemy
   })
+
+  console.log(level.enemies)
   return enemies
 }
 
