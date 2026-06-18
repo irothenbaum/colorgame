@@ -73,7 +73,7 @@ function showAffirmation() {
 on(EventType.ShotFired, (payload: EventPayload[EventType.ShotFired]) => {
   if (payload.track !== props.trackIndex) return
 
-  if (payload.struckEnemyId && !payload.shrapnel && !payload.debris) {
+  if (payload.struckEnemyId && !payload.shrapnel && !payload.debris && getValueFromColor(payload.projectile) > 2) {
     showAffirmation()
     return
   }

@@ -45,6 +45,10 @@ export const useGameStore = defineStore('game', (): GameStore => {
     const newResult = {
       levelId: currentLevel.value.id,
       killedEnemyIds: levelState.value.killedEnemyIds,
+      killedEnemyColors: levelState.value.killedEnemyIds
+        .map(id => levelState.value!.enemiesLookup[id]?.health)
+        .filter((h): h is ColorValue => h !== undefined)
+        .map(h => ({...h})),
       shotsFired: levelState.value.shotsFired,
       totalWaste: levelState.value.totalWaste,
       totalEnemies: levelState.value.totalEnemies,

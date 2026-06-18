@@ -3,6 +3,7 @@ import {ref, computed} from 'vue'
 import {useMenuStore} from '@/stores/menuStore.ts'
 import {Scene} from '@/types/menuTypes.ts'
 import type {LevelDefinition, EnemyDefinition} from '@/types/gameTypes.ts'
+import {EnemyType} from '@/types/gameTypes.ts'
 
 const menuStore = useMenuStore()
 
@@ -11,6 +12,7 @@ const idOverride = ref('')
 const description = ref('')
 const color = ref('')
 const tracks = ref(1)
+const width = ref(0)
 
 const computedId = computed(() =>
   name.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
@@ -22,12 +24,13 @@ interface EnemyRow {
   green: number
   blue: number
   track: number | null
+  type: EnemyType
 }
 
 const enemies = ref<EnemyRow[]>([])
 
 function addEnemy() {
-  enemies.value.push({red: 1, green: 0, blue: 0, track: null})
+  enemies.value.push({red: 1, green: 0, blue: 0, track: null, type: EnemyType.Composite})
 }
 
 function removeEnemy(index: number) {
@@ -46,7 +49,7 @@ const levelDefinition = computed<LevelDefinition>(() => {
     tracks: tracks.value,
     enemies: enemies.value.map(e => {
       const enemy: EnemyDefinition = {
-        type: undefined as any,
+        type: e.type,
         health: {red: e.red, green: e.green, blue: e.blue},
       }
       if (e.track !== null) {
@@ -58,14 +61,20 @@ const levelDefinition = computed<LevelDefinition>(() => {
   if (color.value) {
     def.color = color.value
   }
+  if (width.value > 0) {
+    def.width = width.value
+  }
   return def
 })
 
-// Strip internal fields that have defaults and shouldn't appear in JSON files
+// Strip type when it's the default (Composite) to keep JSON files clean
 const cleanDefinition = computed(() => {
   return {
     ...levelDefinition.value,
-    enemies: levelDefinition.value.enemies.map(({type: _type, ...rest}) => rest),
+    enemies: levelDefinition.value.enemies.map(e => {
+      const {type, ...rest} = e
+      return type === EnemyType.Atomic ? e : rest
+    }),
   }
 })
 
@@ -83,6 +92,51 @@ function saveToFile() {
 
 function copyToClipboard() {
   navigator.clipboard.writeText(jsonOutput.value)
+}
+
+// Image import
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+function handleImageUpload(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  const url = URL.createObjectURL(file)
+  const img = new Image()
+  img.onload = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(img, 0, 0)
+    const {data} = ctx.getImageData(0, 0, img.width, img.height)
+
+    const newEnemies: EnemyRow[] = []
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3]
+      if (a < 128) continue
+
+      const nonZeroChannels = [r, g, b].filter(v => v > 0)
+      if (nonZeroChannels.length === 0) continue
+
+      const min = Math.min(...nonZeroChannels)
+      newEnemies.push({
+        red: Math.round(r / min),
+        green: Math.round(g / min),
+        blue: Math.round(b / min),
+        track: null,
+        type: EnemyType.Composite, // default all to Composite to start
+      })
+    }
+
+    enemies.value.push(...newEnemies)
+    if (width.value === 0) {
+      width.value = img.width
+    }
+    URL.revokeObjectURL(url)
+  }
+  img.src = url
+  ;(event.target as HTMLInputElement).value = ''
 }
 </script>
 
@@ -120,6 +174,10 @@ function copyToClipboard() {
           <label>Tracks</label>
           <input v-model.number="tracks" type="number" min="1" max="8" style="width: 60px" />
         </div>
+        <div class="field-row">
+          <label>Width</label>
+          <input v-model.number="width" type="number" min="0" style="width: 60px" placeholder="auto" />
+        </div>
       </section>
 
       <section>
@@ -129,6 +187,7 @@ function copyToClipboard() {
             <tr>
               <th>#</th>
               <th>Track<br /><small>blank=rand</small></th>
+              <th>Type</th>
               <th>R</th>
               <th>G</th>
               <th>B</th>
@@ -149,6 +208,12 @@ function copyToClipboard() {
                   @input="setTrack(enemy, ($event.target as HTMLInputElement).value)"
                 />
               </td>
+              <td>
+                <select v-model="enemy.type">
+                  <option :value="EnemyType.Composite">Comp.</option>
+                  <option :value="EnemyType.Atomic">Atomic</option>
+                </select>
+              </td>
               <td><input v-model.number="enemy.red" type="number" min="0" max="4" /></td>
               <td><input v-model.number="enemy.green" type="number" min="0" max="4" /></td>
               <td><input v-model.number="enemy.blue" type="number" min="0" max="4" /></td>
@@ -157,7 +222,19 @@ function copyToClipboard() {
             </tr>
           </tbody>
         </table>
-        <button class="add-btn" @click="addEnemy">+ Add Enemy</button>
+        <div class="enemy-actions">
+          <button class="add-btn" @click="addEnemy">+ Add Enemy</button>
+          <div class="import-row">
+            <button @click="fileInputRef?.click()">Upload Image</button>
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept="image/png,image/*"
+              style="display:none"
+              @change="handleImageUpload"
+            />
+          </div>
+        </div>
       </section>
 
       <section>
@@ -173,6 +250,8 @@ function copyToClipboard() {
 </template>
 
 <style scoped lang="scss">
+@use '../../styles';
+
 .level-builder {
   height: 100%;
   width: 100%;
@@ -187,19 +266,19 @@ function copyToClipboard() {
 .builder-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #ccc;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-light-grey);
   flex-shrink: 0;
 
   h1 {
-    font-size: 1.1rem;
+    font-size: var(--font-size-md);
     font-weight: 600;
     margin: 0;
   }
 
   .back-btn {
-    padding: 0.25rem 0.75rem;
+    padding: var(--space-xs) var(--space-sm);
     cursor: pointer;
   }
 }
@@ -207,25 +286,25 @@ function copyToClipboard() {
 .builder-body {
   overflow-y: auto;
   flex: 1;
-  padding: 1rem;
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 
   section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-sm);
 
     h2 {
-      font-size: 0.9rem;
+      font-size: var(--font-size-sm);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #666;
+      color: var(--color-dark-grey);
       margin: 0;
-      padding-bottom: 0.25rem;
-      border-bottom: 1px solid #eee;
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-light-grey);
     }
   }
 }
@@ -233,21 +312,21 @@ function copyToClipboard() {
 .field-row {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--space-sm);
 
   label {
     min-width: 90px;
-    font-size: 0.85rem;
-    color: #555;
+    font-size: var(--font-size-sm);
+    color: var(--color-dark-grey);
   }
 
   input[type='text'],
   textarea {
     flex: 1;
-    padding: 0.25rem 0.4rem;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    font-size: 0.85rem;
+    padding: var(--space-xs);
+    border: 1px solid var(--color-light-grey);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
     font-family: inherit;
   }
 
@@ -259,15 +338,15 @@ function copyToClipboard() {
 .color-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   flex: 1;
 
   input[type='color'] {
     width: 36px;
     height: 28px;
     padding: 1px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
+    border: 1px solid var(--color-light-grey);
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
     flex-shrink: 0;
   }
@@ -280,64 +359,94 @@ function copyToClipboard() {
 
 .enemies-table {
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   width: 100%;
 
   th,
   td {
-    padding: 0.3rem 0.5rem;
+    padding: var(--space-xs) var(--space-sm);
     text-align: center;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-light-grey);
 
     small {
-      font-size: 0.7rem;
-      color: #999;
+      font-size: var(--font-size-xs);
+      color: var(--color-grey);
     }
   }
 
   th {
-    background: #f5f5f5;
+    background: var(--color-near-white);
     font-weight: 600;
   }
 
   input[type='number'] {
-    width: 48px;
+    width: 24px;
     text-align: center;
-    padding: 0.15rem;
-    border: 1px solid #ccc;
-    border-radius: 3px;
+    padding: var(--space-xs);
+    border: 1px solid var(--color-light-grey);
+    border-radius: var(--border-radius-sm);
+  }
+
+  select {
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs);
+    border: 1px solid var(--color-light-grey);
+    border-radius: var(--border-radius-sm);
   }
 }
 
+.enemy-actions {
+  @include styles.flex-row(var(--space-sm));
+  justify-content: space-between;
+}
+
 .add-btn {
-  align-self: flex-start;
-  padding: 0.35rem 0.75rem;
+  padding: var(--space-xs) var(--space-sm);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
+}
+
+.import-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+
+  select {
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs);
+    border: 1px solid var(--color-light-grey);
+    border-radius: var(--border-radius-sm);
+  }
+
+  button {
+    padding: var(--space-xs) var(--space-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+  }
 }
 
 .json-output {
   width: 100%;
   font-family: monospace;
-  font-size: 0.8rem;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+  font-size: var(--font-size-sm);
+  padding: var(--space-sm);
+  border: 1px solid var(--color-light-grey);
+  border-radius: var(--border-radius-sm);
   resize: vertical;
   box-sizing: border-box;
-  background: #fafafa;
+  background: var(--color-near-white);
 }
 
 .action-row {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-sm);
 
   .save-btn {
     font-weight: 600;
   }
 
   button {
-    padding: 0.4rem 1rem;
+    padding: var(--space-xs) var(--space-md);
     cursor: pointer;
   }
 }

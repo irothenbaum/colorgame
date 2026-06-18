@@ -28,6 +28,7 @@ export interface EnemyState extends EnemyDefinition {
 export interface LevelResult {
   levelId: string
   killedEnemyIds: string[] // string of enemy ids that have been killed already
+  killedEnemyColors: ColorValue[] // starting health (color) of each killed enemy, in kill order
   shotsFired: number
   totalWaste: number
   totalEnemies: number
@@ -52,6 +53,7 @@ export interface LevelDefinition {
   color?: string
   enemies: Array<EnemyDefinition>
   tracks: number
+  width?: number
 }
 
 export interface LevelState extends Omit<LevelResult, 'outcome'> {

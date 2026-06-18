@@ -54,7 +54,6 @@ export function instantiateEnemies(level: LevelDefinition): Record<string, Enemy
     enemies[enemy.id] = enemy
   })
 
-  console.log(level.enemies)
   return enemies
 }
 

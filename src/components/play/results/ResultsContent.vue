@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue'
 import type {LevelResult} from '@/types/gameTypes.ts'
+import {colorHealthToColor} from '@/helpers/colorUtils'
+import {useGameStore} from '@/stores/gameStore'
+import {storeToRefs} from 'pinia'
 
 const emit = defineEmits<{
   (e: 'grade-shown'): void
@@ -9,6 +12,16 @@ const emit = defineEmits<{
 const props = defineProps<{
   result: LevelResult,
 }>()
+
+const {currentLevel} = storeToRefs(useGameStore())
+const killedEnemyColors = computed(() => (props.result.killedEnemyColors ?? []).map(colorHealthToColor))
+const enemyGridStyle = computed(() => {
+  const w = currentLevel.value?.width
+  if (!w) {
+    return {}
+  }
+  return {'grid-template-columns': `repeat(${w}, var(--space-xs))`, display: 'grid'}
+})
 
 const shotsFired = computed(() => props.result.shotsFired ?? 0)
 const totalWaste = computed(() => props.result.totalWaste ?? 0)
@@ -130,6 +143,15 @@ onMounted(async () => {
         </div>
       </div>
 
+      <div class="enemy-grid" :style="enemyGridStyle">
+        <span
+          v-for="(color, i) in killedEnemyColors"
+          :key="i"
+          class="enemy-block"
+          :style="{backgroundColor: color}"
+        />
+      </div>
+
       <div class="score">
         <div class="score-percent">{{ scoreDisplay }}</div>
         <div class="score-grade" :class="[gradeClass, {'grade-visible': gradeVisible}]">{{ letterGrade }}</div>
@@ -206,6 +228,19 @@ onMounted(async () => {
       &.pending {
         opacity: 0.3;
       }
+    }
+  }
+
+  .enemy-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    width: 100%;
+
+    .enemy-block {
+      width: var(--space-xs);
+      height: var(--space-xs);
+      border-radius: 2px;
     }
   }
 
