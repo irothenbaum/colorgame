@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, watch} from 'vue'
+import {computed, onMounted, onUnmounted, watch} from 'vue'
 import PlayControls from '@/components/play/controls/PlayControls.vue'
 import LevelWorld from '@/components/play/world/LevelWorld.vue'
+import LevelProgress from '@/components/play/LevelProgress.vue'
 import {storeToRefs} from 'pinia'
 import {useGameStore} from '@/stores/gameStore.ts'
 import {useEvents, EventType} from '@/composables/useEvents.ts'
@@ -16,6 +17,18 @@ const gameStore = useGameStore()
 const {levelState, currentLevel} = storeToRefs(gameStore)
 
 const {broadcast} = useEvents()
+
+const progress = computed(() => {
+  if (!levelState.value) {
+    return 0
+  }
+  const total = Object.keys(levelState.value.enemiesLookup).length
+  if (total === 0) {
+    return 0
+  }
+  return levelState.value.killedEnemyIds.length / total
+})
+
 // watch for game end
 watch(
   () => levelState.value?.killedEnemyIds,
@@ -73,6 +86,7 @@ onUnmounted(() => {
     @replay="handlePlay(currentLevel as LevelDefinition)"
   />
   <div class="play-level">
+    <LevelProgress :progress="progress" />
     <LevelWorld />
     <PlayControls />
   </div>

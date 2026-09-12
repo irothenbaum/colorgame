@@ -1,0 +1,683 @@
+{
+  "id": "usa-flag",
+  "name": "USA Flag",
+  "description": "USA! USA! USA!",
+  "tracks": 1,
+  "enemies": [
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 0,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    },
+    {
+      "health": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      }
+    }
+  ],
+  "color": "#ff0000",
+  "width": 12,
+  "thumbnail": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAYAAADN5B7xAAAAXUlEQVR4AZSPAQ7AIAgDq///M7uKWWTZSJaoFVooTEWEeDg35ofMIipOjcyeWCW1HAdp7CKj4FfCwctdDhaZM4ri1iFQBOoTRfx1GSlyib17190cIzFD0/Hp9NvhAgAA//8nN59WAAAABklEQVQDABW/deGa4iqzAAAAAElFTkSuQmCC"
+}

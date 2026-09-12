@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 import type {LevelDefinition, LevelScoreView} from '@/types/gameTypes.ts'
 import {ContrastColor, darkenColor, getContrastColor} from '@/helpers/colorUtils.ts'
 import {STAR, CHECK, TROPHY, CALENDAR} from '@/constants/icons.ts'
@@ -35,6 +35,13 @@ function formatScore(val: number | null): string {
   return (val === 100 ? '100' : val.toFixed(1)) + '%'
 }
 
+const thumbnailWidth = ref<number | null>(null)
+
+function onThumbnailLoad(e: Event) {
+  const img = e.target as HTMLImageElement
+  thumbnailWidth.value = (props.level.width ?? img.naturalWidth) * 4
+}
+
 function handlePlay() {
   gameStore.startLevel(props.level)
   menuStore.goToScene(Scene.PLAY_LEVEL)
@@ -47,6 +54,14 @@ function handlePlay() {
 
     <h3>{{ level.name }}</h3>
     <p>{{ level.description }}</p>
+    <img
+      v-if="level.thumbnail"
+      :src="level.thumbnail"
+      class="thumbnail"
+      :style="thumbnailWidth ? {width: `${thumbnailWidth}px`} : {}"
+      alt=""
+      @load="onThumbnailLoad"
+    />
 
     <div class="badges" :style="{'--badge-accent': accentColor}">
       <i :class="['pi', CALENDAR, {active: playedToday}]" title="Played today" />
@@ -92,6 +107,10 @@ function handlePlay() {
 
   p {
     font-style: italic;
+  }
+
+  .thumbnail {
+    image-rendering: pixelated;
   }
 
   .badges {

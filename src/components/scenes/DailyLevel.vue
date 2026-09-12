@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, watch} from 'vue'
+import {computed, onMounted, onUnmounted, watch} from 'vue'
 import PlayControls from '@/components/play/controls/PlayControls.vue'
 import LevelWorld from '@/components/play/world/LevelWorld.vue'
 import {storeToRefs} from 'pinia'
 import {useGameStore} from '@/stores/gameStore.ts'
+import LevelProgress from '@/components/play/LevelProgress.vue'
 import {EventType, useEvents} from '@/composables/useEvents.ts'
 import {EnemyType, PlayState} from '@/types/gameTypes.ts'
 import type {EnemyDefinition, LevelDefinition} from '@/types/gameTypes.ts'
@@ -76,6 +77,13 @@ function generateDailyLevel(): LevelDefinition {
 
 const dailyLevel = generateDailyLevel()
 
+const progress = computed(() => {
+  if (!levelState.value) {
+    return 0
+  }
+  return levelState.value.killedEnemyIds.length / dailyLevel.enemies.length
+})
+
 watch(
   () => levelState.value?.killedEnemyIds,
   ids => {
@@ -126,6 +134,7 @@ onUnmounted(() => {
     @replay="gameStore.startLevel(currentLevel as LevelDefinition)"
   />
   <div class="daily-level">
+    <LevelProgress :progress="progress" />
     <LevelWorld />
     <PlayControls />
   </div>

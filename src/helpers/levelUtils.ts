@@ -3,6 +3,8 @@ import level1 from '@/levels/level1.json'
 import level2 from '@/levels/level2.json'
 import level3 from '@/levels/level3.json'
 import level4 from '@/levels/level4.json'
+import usaFlag from '@/levels/usa-flag.json'
+import colorCrescendo from '@/levels/color-crescendo.json'
 
 function getColorForLevel(levelId: string): string {
   const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#33FFF5']
@@ -16,9 +18,11 @@ export function loadAllLevels(): LevelDefinition[] {
     level2 as LevelDefinition,
     level3 as LevelDefinition,
     level4 as LevelDefinition,
-  ].map( l => ({
+    usaFlag as LevelDefinition,
+    colorCrescendo as LevelDefinition,
+  ].map(l => ({
     ...l,
     tracks: Math.max(l.tracks || 1),
-    color: l.color || getColorForLevel(l.id)
+    color: l.color || getColorForLevel(l.id),
   }))
 }

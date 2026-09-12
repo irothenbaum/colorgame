@@ -10,7 +10,7 @@ const emit = defineEmits<{
 }>()
 
 const props = defineProps<{
-  result: LevelResult,
+  result: LevelResult
 }>()
 
 const {currentLevel} = storeToRefs(useGameStore())
@@ -144,12 +144,7 @@ onMounted(async () => {
       </div>
 
       <div class="enemy-grid" :style="enemyGridStyle">
-        <span
-          v-for="(color, i) in killedEnemyColors"
-          :key="i"
-          class="enemy-block"
-          :style="{backgroundColor: color}"
-        />
+        <div v-for="(color, i) in killedEnemyColors" :key="i" class="enemy-block" :style="{backgroundColor: color}" />
       </div>
 
       <div class="score">
@@ -232,15 +227,14 @@ onMounted(async () => {
   }
 
   .enemy-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1px;
+    @include styles.flex-row(0);
     width: 100%;
+    flex-wrap: wrap;
+    container-type: inline-size;
 
     .enemy-block {
-      width: var(--space-xs);
-      height: var(--space-xs);
-      border-radius: 2px;
+      width: 2cqw;
+      aspect-ratio: 1;
     }
   }
 

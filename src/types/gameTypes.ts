@@ -54,6 +54,7 @@ export interface LevelDefinition {
   enemies: Array<EnemyDefinition>
   tracks: number
   width?: number
+  thumbnail?: string
 }
 
 export interface LevelState extends Omit<LevelResult, 'outcome'> {

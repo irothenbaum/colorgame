@@ -13,6 +13,7 @@ const description = ref('')
 const color = ref('')
 const tracks = ref(1)
 const width = ref(0)
+const thumbnail = ref('')
 
 const computedId = computed(() =>
   name.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
@@ -63,6 +64,9 @@ const levelDefinition = computed<LevelDefinition>(() => {
   }
   if (width.value > 0) {
     def.width = width.value
+  }
+  if (thumbnail.value) {
+    def.thumbnail = thumbnail.value
   }
   return def
 })
@@ -133,6 +137,7 @@ function handleImageUpload(event: Event) {
     if (width.value === 0) {
       width.value = img.width
     }
+    thumbnail.value = canvas.toDataURL('image/png')
     URL.revokeObjectURL(url)
   }
   img.src = url
@@ -380,7 +385,7 @@ function handleImageUpload(event: Event) {
   }
 
   input[type='number'] {
-    width: 24px;
+    width: 60px;
     text-align: center;
     padding: var(--space-xs);
     border: 1px solid var(--color-light-grey);
