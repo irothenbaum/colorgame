@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import {computed, onBeforeUnmount, ref} from 'vue'
 import type {LevelDefinition, LevelScoreView} from '@/types/gameTypes.ts'
 import {ContrastColor, darkenColor, getContrastColor} from '@/helpers/colorUtils.ts'
-import {STAR, CHECK, TROPHY, CALENDAR} from '@/constants/icons.ts'
+import {STAR, CHECK, TROPHY, CALENDAR, LOCK} from '@/constants/icons.ts'
 import {useGameStore} from '@/stores/gameStore.ts'
 import {useMenuStore} from '@/stores/menuStore.ts'
 import {Scene} from '@/types/menuTypes.ts'
 import LevelCardAccentBar from '@/components/LevelCardAccentBar.vue'
+import Modal from '@/components/utility/Modal.vue'
 
-const props = withDefaults(defineProps<{
-  level: LevelDefinition
-  highScore: LevelScoreView | null
-  rank?: number
-}>(), {
-  rank: 0,
-})
+const props = withDefaults(
+  defineProps<{
+    level: LevelDefinition
+    highScore: LevelScoreView | null
+    rank?: number
+  }>(),
+  {
+    rank: 0,
+  },
+)
 
 const menuStore = useMenuStore()
 const gameStore = useGameStore()
@@ -29,6 +33,58 @@ const todayIsHighScore = computed(
   () => props.highScore?.todayBest != null && props.highScore.todayBest === props.highScore.allTimeBest,
 )
 const isPerfect = computed(() => props.highScore?.allTimeBest === 100)
+
+interface Badge {
+  icon: string
+  title: string
+  description: string
+  earned: boolean
+}
+
+const badges = computed<Badge[]>(() => [
+  {
+    icon: CALENDAR,
+    title: 'Played Today',
+    description: 'Earned by playing this level at least once today.',
+    earned: playedToday.value,
+  },
+  {
+    icon: TROPHY,
+    title: 'Perfect Score',
+    description: 'Earned by scoring a perfect 100% on this level.',
+    earned: isPerfect.value,
+  },
+  {
+    icon: STAR,
+    title: "Today's High Score",
+    description: "Earned when today's best score matches your all-time best.",
+    earned: todayIsHighScore.value,
+  },
+])
+
+const growingBadgeIndex = ref<number | null>(null)
+const activeBadge = ref<Badge | null>(null)
+const showBadgePopup = ref(false)
+let popupTimeout: ReturnType<typeof setTimeout> | undefined
+
+function onBadgeClick(badge: Badge, index: number) {
+  clearTimeout(popupTimeout)
+  growingBadgeIndex.value = index
+  popupTimeout = setTimeout(() => {
+    activeBadge.value = badge
+    showBadgePopup.value = true
+  }, 200)
+}
+
+function closeBadgePopup() {
+  clearTimeout(popupTimeout)
+  showBadgePopup.value = false
+  growingBadgeIndex.value = null
+}
+
+onBeforeUnmount(() => {
+  clearTimeout(popupTimeout)
+})
 
 function formatScore(val: number | null): string {
   if (val === null) return '—'
@@ -64,9 +120,13 @@ function handlePlay() {
     />
 
     <div class="badges" :style="{'--badge-accent': accentColor}">
-      <i :class="['pi', CALENDAR, {active: playedToday}]" title="Played today" />
-      <i :class="['pi', STAR, {active: todayIsHighScore}]" title="Today's high score" />
-      <i :class="['pi', TROPHY, {active: isPerfect}]" title="Perfect score (100%)" />
+      <i
+        v-for="(badge, index) in badges"
+        :key="badge.title"
+        :class="[badge.icon, {active: badge.earned, growing: growingBadgeIndex === index}]"
+        :title="badge.title"
+        @click="onBadgeClick(badge, index)"
+      />
     </div>
 
     <div class="scores">
@@ -84,6 +144,17 @@ function handlePlay() {
     </div>
 
     <button :style="{backgroundColor: buttonColor, color: buttonTextColor}" @click="handlePlay">Play</button>
+
+    <Modal :show="showBadgePopup" @close="closeBadgePopup">
+      <template v-if="activeBadge">
+        <div class="badge-popup-icon" :class="{earned: activeBadge.earned}" :style="{'--badge-accent': accentColor}">
+          <i class="badge-icon" :class="activeBadge.icon" />
+          <i v-if="!activeBadge.earned" class="lock-icon" :class="LOCK" />
+        </div>
+        <h4 class="badge-popup-title">{{ activeBadge.title }}</h4>
+        <p class="badge-popup-description">{{ activeBadge.description }}</p>
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -119,12 +190,26 @@ function handlePlay() {
     margin-top: var(--space-md);
 
     i {
+      &.active:nth-child(2) {
+        transform: scale(1.8);
+
+        &.growing {
+          transform: scale(2.6);
+        }
+      }
+
       font-size: var(--font-size-xl);
       opacity: 0.12;
+      cursor: pointer;
+      transition: transform 0.5s ease-out;
 
       &.active {
         opacity: 1;
         color: var(--badge-accent);
+      }
+
+      &.growing {
+        transform: scale(1.5);
       }
     }
   }
@@ -164,6 +249,40 @@ function handlePlay() {
     border-radius: var(--border-radius-md);
     @include styles.drop-shadow();
     @include styles.text-shadow;
+  }
+}
+
+.badge-popup-title {
+  font-size: var(--font-size-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-popup-description {
+  opacity: 0.75;
+}
+
+.badge-popup-icon {
+  position: relative;
+  font-size: var(--hud-icon-size-lg);
+
+  i.badge-icon {
+    font-size: inherit;
+    color: var(--color-shadow-light);
+  }
+
+  &.earned .badge-icon {
+    color: var(--badge-accent);
+  }
+
+  .lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7em;
+    color: var(--color-dark-grey);
+    opacity: 1;
   }
 }
 </style>

@@ -2,10 +2,15 @@
 import {useGameStore} from '@/stores/gameStore'
 import {useLongPress} from '@/composables/useLongPress'
 import {COLOR_RESET_DELAY_MS} from '@/constants/environment'
+import Modal from '@/components/utility/Modal.vue'
+
+defineProps<{
+  show: boolean
+}>()
 
 const gameStore = useGameStore()
 
-const {pressing: quitPressing, events: quitEvents} = useLongPress(
+const {pressing: quitPressing, tapped: quitTapped, events: quitEvents} = useLongPress(
   () => {},
   () => gameStore.endGame(),
   COLOR_RESET_DELAY_MS,
@@ -13,43 +18,25 @@ const {pressing: quitPressing, events: quitEvents} = useLongPress(
 </script>
 
 <template>
-  <div class="pause-overlay">
-    <div class="pause-modal">
-      <h1>Paused</h1>
-      <div class="pause-actions">
-        <button class="btn btn-primary" @click="gameStore.togglePause(false)">Resume</button>
+  <Modal :show="show" @close="gameStore.togglePause(false)">
+    <h1>Paused</h1>
+    <div class="pause-actions">
+      <button class="btn btn-primary" @click="gameStore.togglePause(false)">Resume</button>
+      <div class="quit-btn-wrapper">
+        <span v-if="quitTapped" class="hold-tooltip">Hold to press</span>
         <button class="btn btn-secondary" :class="{pressing: quitPressing}" v-on="quitEvents">Quit</button>
       </div>
     </div>
-  </div>
+  </Modal>
 </template>
 
 <style scoped lang="scss">
 @use '../../styles';
 
-.pause-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  @include styles.flex-column();
-  justify-content: center;
-  z-index: 100;
-}
-
-.pause-modal {
-  background: var(--color-near-white);
-  color: var(--color-near-black);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-xl);
-  @include styles.flex-column(var(--space-lg));
-  @include styles.drop-shadow(12px, 0.4);
-  width: min(320px, 90vw);
-
-  h1 {
-    font-size: var(--font-size-xxl);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
+h1 {
+  font-size: var(--font-size-xxl);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .pause-actions {
@@ -75,9 +62,40 @@ const {pressing: quitPressing, events: quitEvents} = useLongPress(
   }
 
   &.btn-secondary {
+    width: 100%;
     background: var(--color-light-grey);
     color: var(--color-near-black);
     @include styles.long-press-progress(left, styles.$colorResetDelay);
+  }
+}
+
+.quit-btn-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.hold-tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--space-sm));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-near-black);
+  color: var(--color-near-white);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  @include styles.drop-shadow();
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: var(--space-xs) solid transparent;
+    border-top-color: var(--color-near-black);
   }
 }
 </style>

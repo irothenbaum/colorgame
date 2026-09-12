@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount, nextTick} from 'vue'
+import {ref, computed, onMounted, onBeforeUnmount, nextTick} from 'vue'
 import type {LevelDefinition} from '@/types/gameTypes.ts'
 import {loadAllLevels} from '@/helpers/levelUtils.ts'
 import {useHighScoresStore} from '@/stores/highScoresStore.ts'
 import {useMenuStore} from '@/stores/menuStore.ts'
+import {HOME} from '@/constants/icons.ts'
 import LevelCard from '@/components/menu/LevelCard.vue'
 import EndlessCard from '@/components/menu/EndlessCard.vue'
 import DailyCard from '@/components/menu/DailyCard.vue'
@@ -13,15 +14,28 @@ import TutorialCard from '@/components/menu/TutorialCard.vue'
 import {useTimeout} from '@/composables/useInterval.ts'
 import LevelBuilderCard from '@/components/menu/LevelBuilderCard.vue'
 
+const LANDING_CARD_INDEX = 3
 const levels: LevelDefinition[] = loadAllLevels()
 const highScoresStore = useHighScoresStore()
 const menuStore = useMenuStore()
 const isDev = import.meta.env.DEV
 
 const listEl = ref<HTMLElement | null>(null)
-const activeLiIndex = ref<number>(3) // default to landing card to avoid flash
+const activeLiIndex = ref<number>(LANDING_CARD_INDEX) // default to landing card to avoid flash
 const canMarkScrolled = ref<boolean>(false)
 const hasScrolled = ref<boolean>(false)
+
+const showHomeAtTop = computed(() => activeLiIndex.value > LANDING_CARD_INDEX + 2)
+const showHomeAtBottom = computed(() => activeLiIndex.value < LANDING_CARD_INDEX - 2)
+
+function goHome() {
+  if (!listEl.value) return
+  const landingCard = listEl.value.querySelector<HTMLElement>('.landing-card-item')
+  if (!landingCard) return
+  const containerCenter = listEl.value.clientHeight / 2
+  const itemCenter = landingCard.offsetTop + landingCard.clientHeight / 2
+  listEl.value.scrollTo({top: itemCenter - containerCenter, behavior: 'smooth'})
+}
 
 function liClass(index: number) {
   const diff = activeLiIndex.value - index
@@ -85,6 +99,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <Transition name="home-icon-fade">
+    <i
+      v-if="showHomeAtTop || showHomeAtBottom"
+      :class="[HOME, 'home-icon', {'home-icon-top': showHomeAtTop, 'home-icon-bottom': showHomeAtBottom}]"
+      @click="goHome"
+    />
+  </Transition>
   <ul class="scenes-container" ref="listEl" :class="{'has-scrolled': hasScrolled}">
     <li :class="liClass(0)">
       <h4>Endless</h4>
@@ -98,9 +119,9 @@ onBeforeUnmount(() => {
       <h4>Training</h4>
       <TrainingCard />
     </li>
-    <li class="landing-card-item" :class="liClass(3)">
+    <li class="landing-card-item" :class="liClass(LANDING_CARD_INDEX)">
       <h4>Main Menu</h4>
-      <LandingCard :is-active="activeLiIndex === 3" />
+      <LandingCard :is-active="activeLiIndex === LANDING_CARD_INDEX" />
     </li>
     <li :class="liClass(4)">
       <h4>Tutorial</h4>
@@ -119,6 +140,34 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 @use '../../styles';
+
+.home-icon {
+  position: absolute;
+  left: var(--space-md);
+  font-size: var(--hud-icon-size-sm);
+  color: var(--color-black);
+  opacity: 0.3;
+  cursor: pointer;
+  z-index: 6;
+
+  &.home-icon-top {
+    top: var(--space-md);
+  }
+
+  &.home-icon-bottom {
+    bottom: var(--space-md);
+  }
+}
+
+.home-icon-fade-enter-active,
+.home-icon-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.home-icon-fade-enter-from,
+.home-icon-fade-leave-to {
+  opacity: 0;
+}
 
 .scenes-container {
   padding: 10vh 0;

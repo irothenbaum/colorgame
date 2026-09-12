@@ -157,7 +157,7 @@ on(EventType.LevelWon, clear)
 </template>
 
 <style scoped lang="scss">
-$fontSize: calc(var(--base-font-size) * 4);
+$fontSize: var(--hud-icon-size-md);
 
 .shrapnel-container {
   position: absolute;

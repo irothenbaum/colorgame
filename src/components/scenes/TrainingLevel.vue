@@ -76,7 +76,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <PauseModal v-if="levelState?.playState === PlayState.Paused" />
+  <PauseModal :show="levelState?.playState === PlayState.Paused" />
   <div class="training-level">
     <div class="training-world">
       <TrackBeam :track-index="0" :get-current-tip-position="getCurrentTipPosition" />

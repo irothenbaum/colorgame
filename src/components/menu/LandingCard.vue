@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {ref, watch, onUnmounted} from 'vue'
+import {ARROW_DOWN} from '@/constants/icons.ts'
 
 const props = defineProps<{
   isActive?: boolean
@@ -42,12 +43,12 @@ onUnmounted(() => {
     </div>
     <div v-if="idleVisible" class="idle-chevrons">
       <div class="chevron-stack">
-        <i class="pi pi-chevron-down" />
-        <i class="pi pi-chevron-down" />
+        <i :class="ARROW_DOWN" />
+        <i :class="ARROW_DOWN" />
       </div>
       <div class="chevron-stack">
-        <i class="pi pi-chevron-down" />
-        <i class="pi pi-chevron-down" />
+        <i :class="ARROW_DOWN" />
+        <i :class="ARROW_DOWN" />
       </div>
     </div>
   </div>
@@ -180,7 +181,7 @@ onUnmounted(() => {
     opacity: 0.3;
 
     i {
-      font-size: calc(var(--base-font-size) * 4);
+      font-size: var(--hud-icon-size-md);
       color: var(--color-black);
       line-height: 0.4;
       animation: chevron-hint 1.2s ease-out infinite;

@@ -29,6 +29,10 @@ $transitionPause: $transitionPauseSpeed $transitionStepEase;
   --font-size-xl: calc(var(--base-font-size) * 2); /* 21px */
   --font-size-xxl: calc(var(--base-font-size) * 2.5); /* 28px */
 
+  --hud-icon-size-sm: calc(var(--base-font-size) * 3);
+  --hud-icon-size-md: calc(var(--base-font-size) * 4);
+  --hud-icon-size-lg: calc(var(--base-font-size) * 5.5);
+
   --border-radius-xs: 2px;
   --border-radius-sm: 4px;
   --border-radius-md: 8px;

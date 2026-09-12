@@ -5,7 +5,19 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
   const fired = ref(false)
   const touchActive = ref(false)
   const pressing = ref(false)
+  const tapped = ref(false)
   let touchActiveTimer: ReturnType<typeof setTimeout> | null = null
+  let tappedTimer: ReturnType<typeof setTimeout> | null = null
+
+  const flagTapped = () => {
+    tapped.value = true
+    if (tappedTimer) {
+      clearTimeout(tappedTimer)
+    }
+    tappedTimer = setTimeout(() => {
+      tapped.value = false
+    }, 1500)
+  }
 
   const startTimer = () => {
     fired.value = false
@@ -51,6 +63,7 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
     }
     if (!fired.value) {
       onTap()
+      flagTapped()
     }
     fired.value = false
     scheduleClearTouchActive()
@@ -79,6 +92,7 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
     }
     if (!fired.value) {
       onTap()
+      flagTapped()
     }
     fired.value = false
   }
@@ -104,10 +118,14 @@ export function useLongPress(onTap: () => void, onLongPress: () => void, duratio
     if (touchActiveTimer) {
       clearTimeout(touchActiveTimer)
     }
+    if (tappedTimer) {
+      clearTimeout(tappedTimer)
+    }
   })
 
   return {
     pressing,
+    tapped,
     events: {
       touchstart: onTouchstart,
       touchend: onTouchend,

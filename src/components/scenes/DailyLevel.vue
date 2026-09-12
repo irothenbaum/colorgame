@@ -127,7 +127,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <PauseModal v-if="levelState?.playState === PlayState.Paused" />
+  <PauseModal :show="levelState?.playState === PlayState.Paused" />
   <LevelResults
     v-if="levelState?.playState === PlayState.Won || levelState?.playState === PlayState.Lost"
     @back="handleBackToSelect"
