@@ -44,7 +44,7 @@ const emit = defineEmits<{
   color: var(--color-near-black);
   padding: var(--space-xl);
   @include styles.flex-column(var(--space-md));
-  width: min(320px, 90vw);
+  width: min(340px, 90vw);
   text-align: center;
   z-index: 101;
 

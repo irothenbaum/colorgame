@@ -39,7 +39,7 @@ onUnmounted(() => {
         <span class="u-letter">U</span>
         <span class="e-letter">E</span>
       </div>
-      <div class="blitz-title">BLITZ</div>
+      <div class="blitz-title" data-text="BLITZ">BLITZ</div>
     </div>
     <div v-if="idleVisible" class="idle-chevrons">
       <div class="chevron-stack">
@@ -56,18 +56,6 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 @use '../../styles';
-
-@keyframes rainbow-sweep {
-  0% {
-    background-position: 100% center;
-  }
-  35% {
-    background-position: 0% center;
-  }
-  100% {
-    background-position: 0% center;
-  }
-}
 
 @keyframes chevron-hint {
   0% {
@@ -134,31 +122,14 @@ onUnmounted(() => {
     color: var(--color-near-black);
 
     &::after {
-      content: 'BLITZ';
+      content: attr(data-text);
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       letter-spacing: inherit;
-      // gradient: transparent edges bracket the rainbow band in the center third
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        transparent 30%,
-        #ff6b6b 38%,
-        #ffd93d 46%,
-        #6bcb77 54%,
-        #4d96ff 62%,
-        #d46bff 68%,
-        transparent 72%,
-        transparent 100%
-      );
-      background-size: 400% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: rainbow-sweep 3s ease-in-out infinite;
+      @include styles.rainbow-sweep();
     }
   }
 

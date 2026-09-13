@@ -168,9 +168,9 @@ $transitionTimings: (
     }
   }
 
-  @include flex-row(var(--space-xs));
+  @include flex-row(2px);
   justify-content: space-evenly;
-  padding: var(--space-xs);
+  padding: 2px;
   position: relative;
   transition:
     width var(--enemy-shrink-dur, 200ms) ease-out,
@@ -200,6 +200,45 @@ $transitionTimings: (
     height: 100%;
     background-color: inherit;
   }
+}
+
+// Clips an animated rainbow gradient to glyph shapes (text or icon-font
+// content), leaving a moving colored band over the rest of the element.
+// Meant to be applied to a duplicate layer stacked exactly on top of a
+// solid-colored original of the same content — e.g. a ::after with
+// content: attr(data-text), or a second icon element with matching classes.
+@mixin rainbow-sweep($duration: 3s) {
+  @at-root {
+    @keyframes rainbow-sweep {
+      0% {
+        background-position: 100% center;
+      }
+      35% {
+        background-position: 0% center;
+      }
+      100% {
+        background-position: 0% center;
+      }
+    }
+  }
+
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 30%,
+    #ff6b6b 38%,
+    #ffd93d 46%,
+    #6bcb77 54%,
+    #4d96ff 62%,
+    #d46bff 68%,
+    transparent 72%,
+    transparent 100%
+  );
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbow-sweep $duration ease-in-out infinite;
 }
 
 @mixin level-card() {

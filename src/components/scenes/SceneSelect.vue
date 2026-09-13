@@ -146,7 +146,6 @@ onBeforeUnmount(() => {
   left: var(--space-md);
   font-size: var(--hud-icon-size-sm);
   color: var(--color-black);
-  opacity: 0.3;
   cursor: pointer;
   z-index: 6;
 

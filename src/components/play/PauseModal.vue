@@ -19,7 +19,7 @@ const {pressing: quitPressing, tapped: quitTapped, events: quitEvents} = useLong
 
 <template>
   <Modal :show="show" @close="gameStore.togglePause(false)">
-    <h1>Paused</h1>
+    <h1 data-text="Paused">Paused</h1>
     <div class="pause-actions">
       <button class="btn btn-primary" @click="gameStore.togglePause(false)">Resume</button>
       <div class="quit-btn-wrapper">
@@ -34,14 +34,24 @@ const {pressing: quitPressing, tapped: quitTapped, events: quitEvents} = useLong
 @use '../../styles';
 
 h1 {
+  position: relative;
   font-size: var(--font-size-xxl);
   letter-spacing: 0.05em;
+  line-height: 1em;
   text-transform: uppercase;
+
+  &::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    @include styles.rainbow-sweep();
+  }
 }
 
 .pause-actions {
   @include styles.flex-row(var(--space-md));
   width: 100%;
+  margin-top: var(--space-lg);
 }
 
 .btn {

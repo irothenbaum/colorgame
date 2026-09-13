@@ -44,6 +44,7 @@ onMounted(() => {
   width: 100%;
   background: white;
   position: relative;
+  contain: layout;
 
   @keyframes reveal-fade {
     from {
